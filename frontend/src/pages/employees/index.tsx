@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { employeesApi } from '@/api'
-import { Search, Edit2, Trash2, UserCog, Shield } from 'lucide-react'
+import { Search, Trash2, UserCog, Shield } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function EmployeesPage() {

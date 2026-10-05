@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { auditApi } from '@/api'
-import { Search, Filter } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 export default function AuditLogsPage() {
   const [page, setPage] = useState(1)

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { publicRepairsApi } from '@/api'
-import { Search, Wrench, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { Search, Wrench, CheckCircle, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function TrackPage() {

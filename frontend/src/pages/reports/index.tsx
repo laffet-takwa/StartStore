@@ -1,13 +1,11 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { reportsApi } from '@/api'
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { format } from 'date-fns'
 
 const COLORS = ['#2563EB', '#16A34A', '#F59E0B', '#DC2626', '#0EA5E9']
 
 export default function ReportsPage() {
-  const [period, setPeriod] = useState('month')
+  const period = 'month'
 
   const { data: salesData, isLoading: salesLoading } = useQuery({
     queryKey: ['reports-sales', period],

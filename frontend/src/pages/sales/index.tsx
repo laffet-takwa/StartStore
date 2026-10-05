@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { salesApi } from '@/api'
-import { Plus, Search, Edit2, Trash2, Eye, ShoppingCart } from 'lucide-react'
+import { Plus, Search, Eye, ShoppingCart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 

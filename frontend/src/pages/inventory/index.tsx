@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { inventoryApi, productsApi } from '@/api'
-import { Warehouse, AlertTriangle, Package, TrendingDown } from 'lucide-react'
+import { productsApi } from '@/api'
+import { Warehouse, AlertTriangle, Package } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Product } from '@/types'
 

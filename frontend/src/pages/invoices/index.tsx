@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { invoicesApi, salesApi } from '@/api'
-import { Search, Download, FileText } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { invoicesApi } from '@/api'
+import { Search, Download } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function InvoicesPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
-  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
     queryKey: ['invoices', page, search],

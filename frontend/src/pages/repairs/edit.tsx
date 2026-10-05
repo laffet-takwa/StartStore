@@ -34,7 +34,7 @@ export default function RepairEditPage() {
     queryFn: () => devicesApi.list({ page_size: 100 }),
   })
 
-  const { data: techniciansData } = useQuery({
+  const { data: _techniciansData } = useQuery({
     queryKey: ['technicians'],
     queryFn: () => employeesApi.list({ role: 'technician', page_size: 100 }),
   })

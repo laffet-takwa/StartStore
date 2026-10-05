@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { invoicesApi } from '@/api'
-import { ArrowLeft, FileText, User, DollarSign, Calendar } from 'lucide-react'
+import { ArrowLeft, User, Calendar } from 'lucide-react'
 import type { Invoice } from '@/types'
 
 export default function InvoiceDetailPage() {

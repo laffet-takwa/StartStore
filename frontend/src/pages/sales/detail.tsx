@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { salesApi } from '@/api'
-import { ArrowLeft, ShoppingCart, User, Calendar, CreditCard, FileText } from 'lucide-react'
+import { ArrowLeft, User, Calendar, CreditCard } from 'lucide-react'
 import type { Sale, SaleItem } from '@/types'
 
 export default function SaleDetailPage() {

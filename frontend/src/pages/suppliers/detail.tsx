@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { suppliersApi } from '@/api'
-import { ArrowLeft, Phone, Mail, MapPin, Building2, Package } from 'lucide-react'
+import { ArrowLeft, Phone, Mail, MapPin, Building2 } from 'lucide-react'
 import type { Supplier } from '@/types'
 
 export default function SupplierDetailPage() {
