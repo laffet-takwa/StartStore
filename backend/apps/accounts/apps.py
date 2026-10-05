@@ -10,4 +10,4 @@ class AccountsConfig(AppConfig):
     verbose_name = 'Accounts'
 
     def ready(self):
-        import apps.accounts.signals
+        pass

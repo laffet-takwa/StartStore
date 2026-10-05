@@ -10,4 +10,4 @@ class RepairsConfig(AppConfig):
     verbose_name = 'Repairs'
 
     def ready(self):
-        import apps.repairs.signals
+        pass
