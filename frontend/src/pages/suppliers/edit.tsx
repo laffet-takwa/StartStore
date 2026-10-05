@@ -33,7 +33,7 @@ export default function SupplierEditPage() {
   })
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SupplierForm>({
-    resolver: zodResolver(supplierSchema),
+    resolver: zodResolver(supplierSchema) as any,
     values: supplier ? {
       name: supplier.name,
       contact_person: supplier.contact_person || '',

@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { customersApi } from '@/api/customers.api'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Phone, Mail, MapPin, Building2, Calendar } from 'lucide-react'
 import type { Customer } from '@/types'
 
 export default function CustomerDetailPage() {

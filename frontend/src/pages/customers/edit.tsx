@@ -36,7 +36,7 @@ export default function CustomerEditPage() {
   })
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CustomerForm>({
-    resolver: zodResolver(customerSchema),
+    resolver: zodResolver(customerSchema) as any,
     values: customer ? {
       first_name: customer.first_name,
       last_name: customer.last_name,

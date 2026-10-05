@@ -36,7 +36,6 @@ import EmployeesPage from '@/pages/employees'
 import PublicTrackingPage from '@/pages/track'
 import NotFoundPage from '@/pages/not-found'
 import { Navigate } from 'react-router-dom'
-import type { Role } from '@/types'
 
 export const router = createBrowserRouter([
   {

@@ -155,7 +155,7 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip formatter={(value: number | string) => `${Number(value).toLocaleString()} TND`} />
+                <Tooltip formatter={(value) => `${Number(value).toLocaleString()} TND`} />
                 <Bar dataKey="value" fill="#2563EB" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

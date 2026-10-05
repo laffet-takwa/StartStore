@@ -59,7 +59,7 @@ export default function RepairEditPage() {
 
   const mutation = useMutation({
     mutationFn: (data: RepairForm) =>
-      isEdit ? repairsApi.update(id!, data) : repairsApi.create(data),
+      isEdit ? repairsApi.update(id!, data as unknown as Parameters<typeof repairsApi.update>[1]) : repairsApi.create(data as unknown as Parameters<typeof repairsApi.create>[0]),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairs'] })
       toast.success(isEdit ? 'Repair updated' : 'Repair created')
