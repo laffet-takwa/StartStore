@@ -87,14 +87,19 @@ class CheckoutValidationTests(CheckoutTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=response.data)
         self.assertEqual(Order.objects.count(), 0)
 
-    def test_cannot_send_both_address_id_and_inline_address(self):
-        self.fill_cart()
+    def test_cannot_send_both_a_saved_id_and_an_inline_address(self):
         address = create_address(self.profile)
-        payload = checkout_payload()
-        payload["address_id"] = str(address.pk)
-        response = self.checkout(payload)
+        self.fill_cart()
+
+        response = self.checkout(
+            {
+                "shipping_address_id": str(address.pk),
+                "shipping_address": checkout_payload()["shipping_address"],
+            }
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("address_id", response.data["error"]["details"])
+        self.assertIn("shipping_address_id", response.data["error"]["details"])
+        self.assertEqual(Order.objects.count(), 0)
 
     def test_inline_address_fields_are_validated(self):
         self.fill_cart()
@@ -143,11 +148,67 @@ class CheckoutValidationTests(CheckoutTestCase):
 
 
 class CheckoutSavedAddressTests(CheckoutTestCase):
+    def test_checkout_with_a_saved_shipping_address_id(self):
+        """The payload the frontend sends after the integration change."""
+        address = create_address(self.profile, is_default=True)
+        self.fill_cart()
+
+        response = self.checkout(
+            {"shipping_address_id": str(address.pk), "payment_method": "card"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, msg=response.data)
+
+        stored = Order.objects.get().shipping_address
+        self.assertEqual(stored["address_line"], address.address_line)
+        self.assertEqual(stored["country"], "GB")
+
+    def test_payment_method_is_accepted_and_not_persisted(self):
+        address = create_address(self.profile)
+        self.fill_cart()
+
+        response = self.checkout(
+            {"shipping_address_id": str(address.pk), "payment_method": "pay_on_delivery"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, msg=response.data)
+        # The schema has no payment_method column; the order stays pending.
+        self.assertEqual(Order.objects.get().payment_status, PaymentStatus.PENDING)
+
+    def test_unknown_payment_method_is_rejected(self):
+        address = create_address(self.profile)
+        self.fill_cart()
+
+        response = self.checkout(
+            {"shipping_address_id": str(address.pk), "payment_method": "goat"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("payment_method", response.data["error"]["details"])
+
+    def test_legacy_address_id_still_works(self):
+        """Older clients keep working; the alias is collapsed, not broken."""
+        address = create_address(self.profile)
+        self.fill_cart()
+
+        response = self.checkout({"address_id": str(address.pk)})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, msg=response.data)
+
+    def test_sending_both_destination_shapes_is_rejected(self):
+        address = create_address(self.profile)
+        self.fill_cart()
+
+        response = self.checkout(
+            {
+                "shipping_address_id": str(address.pk),
+                "shipping_address": checkout_payload()["shipping_address"],
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("shipping_address_id", response.data["error"]["details"])
+
     def test_checkout_with_a_saved_address_id(self):
         address = create_address(self.profile, is_default=True)
         self.fill_cart()
 
-        response = self.checkout({"address_id": str(address.pk)})
+        response = self.checkout({"shipping_address_id": str(address.pk)})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, msg=response.data)
 
         stored = Order.objects.get().shipping_address

@@ -276,6 +276,6 @@ export function NoResultsState({
 /* Status pill                                                                  */
 /* -------------------------------------------------------------------------- */
 
-export function StatusDot({ className }: { className?: string }) {
+export function StatTNDot({ className }: { className?: string }) {
   return <span className={cn('h-1.5 w-1.5 rounded-full', className)} aria-hidden />
 }

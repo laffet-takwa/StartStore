@@ -73,6 +73,18 @@ LOCAL_APPS = [
     "wishlist",
     "orders",
     "payments",
+    "employees",
+    "customers",
+    "devices",
+    "repairs",
+    "suppliers",
+    "inventory",
+    "sales",
+    "invoices",
+    "content",
+    "robotics",
+    "notifications",
+    "reports",
 ]
 
 INSTALLED_APPS = [*DJANGO_APPS, *THIRD_PARTY_APPS, *LOCAL_APPS]
@@ -291,7 +303,7 @@ SPECTACULAR_SETTINGS = {
 # locale (`CURRENCY=TND` on an en-TN machine), which would silently override the
 # project setting. Namespacing removes the whole class of collision.
 # --------------------------------------------------------------------------- #
-STARTSTORE_CURRENCY = env_str("STARTSTORE_CURRENCY", "USD")
+STARTSTORE_CURRENCY = env_str("STARTSTORE_CURRENCY", "TND")
 STARTSTORE_SHIPPING_FLAT_RATE = env_float("STARTSTORE_SHIPPING_FLAT_RATE", 9.99)
 STARTSTORE_FREE_SHIPPING_THRESHOLD = env_float("STARTSTORE_FREE_SHIPPING_THRESHOLD", 100.00)
 STARTSTORE_CART_ITEM_MAX_QUANTITY = env_int("STARTSTORE_CART_ITEM_MAX_QUANTITY", 99)

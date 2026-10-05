@@ -12,13 +12,23 @@ from rest_framework import permissions
 
 
 def is_admin(user) -> bool:
-    """Return whether ``user`` may perform staff level operations.
-
-    ``role`` is the single source of truth: there is no ``is_staff`` column in
-    ``public.profiles``, so :attr:`accounts.models.Profile.is_staff` is derived
-    from it.
-    """
+    """Return whether ``user`` may perform staff level operations."""
     return bool(getattr(user, "is_admin", False))
+
+
+def is_manager(user) -> bool:
+    role = getattr(user, "role", None)
+    return role in ("admin", "manager")
+
+
+def is_technician(user) -> bool:
+    role = getattr(user, "role", None)
+    return role in ("admin", "manager", "technician")
+
+
+def is_sales(user) -> bool:
+    role = getattr(user, "role", None)
+    return role in ("admin", "manager", "sales")
 
 
 class IsAdmin(permissions.BasePermission):
@@ -28,6 +38,33 @@ class IsAdmin(permissions.BasePermission):
 
     def has_permission(self, request, view) -> bool:
         return is_admin(request.user)
+
+
+class IsManager(permissions.BasePermission):
+    """Allow managers and admins."""
+
+    message = "Manager privileges are required for this operation."
+
+    def has_permission(self, request, view) -> bool:
+        return is_manager(request.user)
+
+
+class IsTechnician(permissions.BasePermission):
+    """Allow technicians, managers and admins."""
+
+    message = "Technician privileges are required for this operation."
+
+    def has_permission(self, request, view) -> bool:
+        return is_technician(request.user)
+
+
+class IsSales(permissions.BasePermission):
+    """Allow sales, managers and admins."""
+
+    message = "Sales privileges are required for this operation."
+
+    def has_permission(self, request, view) -> bool:
+        return is_sales(request.user)
 
 
 class IsCustomer(permissions.BasePermission):

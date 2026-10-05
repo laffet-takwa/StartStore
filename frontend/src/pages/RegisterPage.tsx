@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { Alert, Button, Input, PasswordInput } from '@/components/common'
+import { isSupabaseConfigured } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { messageOf } from '@/hooks/useCart'
 import {
@@ -14,7 +15,7 @@ import {
 import { ROUTES } from '@/utils/constants'
 
 export default function RegisterPage() {
-  const { register: createAccount, login } = useAuth()
+  const { register: createAccount } = useAuth()
   const navigate = useNavigate()
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -37,30 +38,38 @@ export default function RegisterPage() {
   const onSubmit = async (values: RegisterValues) => {
     setFormError(null)
     try {
-      // Registration creates the Supabase auth user and the profiles row.
+      // Supabase creates auth.users; Django then materialises public.profiles
+      // with role = customer. A role can never come from the client.
       await createAccount({
         email: values.email,
         password: values.password,
         full_name: values.full_name,
         phone: values.phone || undefined,
       })
-
-      // Sign straight in so the new account lands in a usable session.
-      try {
-        await login(values.email, values.password)
-        navigate(ROUTES.home, { replace: true })
-      } catch {
-        // Email confirmation may be required; that is not a failure.
-        navigate(ROUTES.login, {
-          replace: true,
-          state: { justRegistered: true },
-        })
-      }
+      navigate(ROUTES.home, { replace: true })
     } catch (error) {
+      const message = messageOf(error, 'Could not create your account.')
+      // "Check your inbox" is a success path, so send them to sign in.
+      if (message.toLowerCase().includes('inbox')) {
+        navigate(ROUTES.login, { replace: true, state: { justRegistered: true } })
+        return
+      }
       if (!applyServerErrors({ setError }, error)) {
-        setFormError(messageOf(error, 'Could not create your account.'))
+        setFormError(message)
       }
     }
+  }
+
+  if (!isSupabaseConfigured()) {
+    return (
+      <div className="animate-slide-up">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">Create your account</h1>
+        <Alert variant="warning" className="mt-6">
+          Sign-up needs Supabase configured. Set <code>VITE_SUPABASE_URL</code> and{' '}
+          <code>VITE_SUPABASE_ANON_KEY</code>.
+        </Alert>
+      </div>
+    )
   }
 
   return (

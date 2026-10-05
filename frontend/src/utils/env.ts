@@ -24,7 +24,7 @@ export const SUPABASE_ANON_KEY = env(
 )
 
 export const STORE_NAME = env('VITE_STORE_NAME', 'StartStore')
-export const CURRENCY = env('VITE_CURRENCY', 'USD')
+export const CURRENCY = env('VITE_CURRENCY', 'TND')
 export const LOCALE = 'en-US'
 
 export const IS_DEV = import.meta.env.DEV

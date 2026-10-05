@@ -778,7 +778,7 @@ class ProductDerivedValueTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-@override_settings(STARTSTORE_CURRENCY="USD")
+@override_settings(STARTSTORE_CURRENCY="TND")
 class StoreConfigurationTests(SimpleTestCase):
     def test_currency_is_namespaced(self):
         """Windows exports CURRENCY=<locale>; it must not reach the store."""

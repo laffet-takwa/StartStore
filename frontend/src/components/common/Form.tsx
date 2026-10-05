@@ -317,21 +317,21 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
 /* Radio group                                                                  */
 /* -------------------------------------------------------------------------- */
 
-export interface RadioOption {
-  value: string
+export interface RadioOption<T extends string = string> {
+  value: T
   label: string
   description?: string
 }
 
-export function RadioGroup({
+export function RadioGroup<T extends string = string>({
   options,
   value,
   onChange,
   className,
 }: {
-  options: RadioOption[]
-  value: string
-  onChange: (value: string) => void
+  options: RadioOption<T>[]
+  value: T
+  onChange: (value: T) => void
   className?: string
 }) {
   return (

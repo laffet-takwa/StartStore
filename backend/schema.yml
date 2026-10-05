@@ -193,6 +193,56 @@ paths:
                 $ref: '#/components/schemas/Profile'
           description: ''
   /api/addresses/:
+    post:
+      operationId: addresses_create
+      description: The first address saved always becomes the default.
+      summary: Save an address
+      tags:
+      - addresses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressRequest'
+            examples:
+              Home:
+                value:
+                  full_name: Ada Lovelace
+                  phone: '+15551234567'
+                  address_line: 1 Analytical Engine Way
+                  city: London
+                  postal_code: EC1A 1BB
+                  country: GB
+                  is_default: true
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddressRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - supabaseAuth: []
+      - bearerAuth: []
+      - supabaseAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+              examples:
+                Home:
+                  value:
+                    full_name: Ada Lovelace
+                    phone: '+15551234567'
+                    address_line: 1 Analytical Engine Way
+                    city: London
+                    postal_code: EC1A 1BB
+                    country: GB
+                    is_default: true
+          description: ''
     get:
       operationId: addresses_list
       description: Default address first. Filter with `?is_default=true` for just
@@ -244,56 +294,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedAddressList'
-          description: ''
-    post:
-      operationId: addresses_create
-      description: The first address saved always becomes the default.
-      summary: Save an address
-      tags:
-      - addresses
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddressRequest'
-            examples:
-              Home:
-                value:
-                  full_name: Ada Lovelace
-                  phone: '+15551234567'
-                  address_line: 1 Analytical Engine Way
-                  city: London
-                  postal_code: EC1A 1BB
-                  country: GB
-                  is_default: true
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/AddressRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/AddressRequest'
-        required: true
-      security:
-      - bearerAuth: []
-      - supabaseAuth: []
-      - bearerAuth: []
-      - supabaseAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Address'
-              examples:
-                Home:
-                  value:
-                    full_name: Ada Lovelace
-                    phone: '+15551234567'
-                    address_line: 1 Analytical Engine Way
-                    city: London
-                    postal_code: EC1A 1BB
-                    country: GB
-                    is_default: true
           description: ''
   /api/addresses/{id}/:
     get:
@@ -424,6 +424,42 @@ paths:
                 $ref: '#/components/schemas/Address'
           description: ''
   /api/categories/:
+    post:
+      operationId: categories_create
+      description: |-
+        Public catalogue navigation, admin managed taxonomy.
+
+        * ``GET`` is open; inactive categories are hidden from non-staff callers.
+        * ``POST``/``PATCH``/``DELETE`` require the ``admin`` role.
+        * ``DELETE`` soft-deactivates instead of removing rows that historic orders
+          still reference.
+      summary: Create a category
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - supabaseAuth: []
+      - bearerAuth: []
+      - supabaseAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
     get:
       operationId: categories_list
       description: Public. Inactive categories are only visible to staff.
@@ -474,42 +510,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedCategoryList'
-          description: ''
-    post:
-      operationId: categories_create
-      description: |-
-        Public catalogue navigation, admin managed taxonomy.
-
-        * ``GET`` is open; inactive categories are hidden from non-staff callers.
-        * ``POST``/``PATCH``/``DELETE`` require the ``admin`` role.
-        * ``DELETE`` soft-deactivates instead of removing rows that historic orders
-          still reference.
-      summary: Create a category
-      tags:
-      - categories
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CategoryRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/CategoryRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CategoryRequest'
-        required: true
-      security:
-      - bearerAuth: []
-      - supabaseAuth: []
-      - bearerAuth: []
-      - supabaseAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Category'
           description: ''
   /api/categories/{id}/:
     get:
@@ -611,6 +611,43 @@ paths:
         '204':
           description: No response body
   /api/products/{product_id}/images/:
+    post:
+      operationId: products_images_create
+      description: Gallery management for a single product (``admin`` only).
+      summary: Attach an image
+      parameters:
+      - in: path
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductImageRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - supabaseAuth: []
+      - bearerAuth: []
+      - supabaseAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductImage'
+          description: ''
     get:
       operationId: products_images_list
       description: Gallery management for a single product (``admin`` only).
@@ -659,43 +696,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedProductImageList'
-          description: ''
-    post:
-      operationId: products_images_create
-      description: Gallery management for a single product (``admin`` only).
-      summary: Attach an image
-      parameters:
-      - in: path
-        name: product_id
-        schema:
-          type: string
-          format: uuid
-        required: true
-      tags:
-      - products
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductImageRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ProductImageRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ProductImageRequest'
-        required: true
-      security:
-      - bearerAuth: []
-      - supabaseAuth: []
-      - bearerAuth: []
-      - supabaseAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProductImage'
           description: ''
   /api/products/{product_id}/images/{id}/:
     get:
@@ -796,6 +796,36 @@ paths:
         '204':
           description: No response body
   /api/products/:
+    post:
+      operationId: products_create
+      description: Admin only. Price, stock and visibility are all server owned.
+      summary: Create a product
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - supabaseAuth: []
+      - bearerAuth: []
+      - supabaseAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
     get:
       operationId: products_list
       description: |-
@@ -873,36 +903,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedProductList'
-          description: ''
-    post:
-      operationId: products_create
-      description: Admin only. Price, stock and visibility are all server owned.
-      summary: Create a product
-      tags:
-      - products
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ProductRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ProductRequest'
-        required: true
-      security:
-      - bearerAuth: []
-      - supabaseAuth: []
-      - bearerAuth: []
-      - supabaseAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
           description: ''
   /api/products/{id}/:
     get:
@@ -1078,54 +1078,6 @@ paths:
                 $ref: '#/components/schemas/Cart'
           description: ''
   /api/cart/items/:
-    get:
-      operationId: cart_items_list
-      description: |-
-        Lines inside the authenticated customer's cart.
-
-        ``get_queryset`` is scoped to the requester's own cart, which is both the
-        ownership check and the reason another cart's ids resolve to 404.
-        ``IsOwner`` is layered on top as an explicit second check.
-      summary: List cart items
-      parameters:
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
-        schema:
-          type: string
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: search
-        required: false
-        in: query
-        description: A search term.
-        schema:
-          type: string
-      tags:
-      - cart
-      security:
-      - bearerAuth: []
-      - supabaseAuth: []
-      - bearerAuth: []
-      - supabaseAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedCartItemList'
-          description: ''
     post:
       operationId: cart_items_create
       description: Creates the line, or increases the quantity when the product is
@@ -1178,6 +1130,54 @@ paths:
                     product_id: 3
                     quantity: 4
                   summary: Add several units
+          description: ''
+    get:
+      operationId: cart_items_list
+      description: |-
+        Lines inside the authenticated customer's cart.
+
+        ``get_queryset`` is scoped to the requester's own cart, which is both the
+        ownership check and the reason another cart's ids resolve to 404.
+        ``IsOwner`` is layered on top as an explicit second check.
+      summary: List cart items
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - cart
+      security:
+      - bearerAuth: []
+      - supabaseAuth: []
+      - bearerAuth: []
+      - supabaseAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCartItemList'
           description: ''
   /api/cart/items/{id}/:
     get:
@@ -1410,6 +1410,57 @@ paths:
         '204':
           description: No response body
   /api/orders/:
+    post:
+      operationId: orders_create
+      description: Converts the authenticated customer's cart into an order. Provide
+        either `address_id` (a saved address) or an inline `shipping_address`. The
+        subtotal, shipping cost and total are recomputed on the server - any price
+        in the request body is ignored. Rejected with 400 when the cart is empty,
+        a product was deactivated, or stock is insufficient. On success the cart is
+        emptied and stock is decremented atomically.
+      summary: Check out
+      tags:
+      - orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+            examples:
+              SavedAddress:
+                value:
+                  shipping_address_id: 4365885e-2f06-40da-86cb-d0ece19b4515
+                  payment_method: card
+                summary: Saved address
+              InlineAddress:
+                value:
+                  shipping_address:
+                    full_name: Ada Lovelace
+                    phone: '+15551234567'
+                    address_line: 1 Analytical Engine Way
+                    city: London
+                    postal_code: EC1A 1BB
+                    country: GB
+                  payment_method: pay_on_delivery
+                summary: Inline address
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      security:
+      - bearerAuth: []
+      - supabaseAuth: []
+      - bearerAuth: []
+      - supabaseAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
     get:
       operationId: orders_list
       description: |-
@@ -1504,55 +1555,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedOrderListList'
-          description: ''
-    post:
-      operationId: orders_create
-      description: Converts the authenticated customer's cart into an order. Provide
-        either `address_id` (a saved address) or an inline `shipping_address`. The
-        subtotal, shipping cost and total are recomputed on the server - any price
-        in the request body is ignored. Rejected with 400 when the cart is empty,
-        a product was deactivated, or stock is insufficient. On success the cart is
-        emptied and stock is decremented atomically.
-      summary: Check out
-      tags:
-      - orders
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrderCreateRequest'
-            examples:
-              SavedAddress:
-                value:
-                  address_id: 0f3d2b1a-9c4e-4a1b-8f7e-2d6c5b4a3e21
-                summary: Saved address
-              InlineAddress:
-                value:
-                  shipping_address:
-                    full_name: Ada Lovelace
-                    phone: '+15551234567'
-                    address_line: 1 Analytical Engine Way
-                    city: London
-                    postal_code: EC1A 1BB
-                    country: GB
-                summary: Inline address
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/OrderCreateRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/OrderCreateRequest'
-      security:
-      - bearerAuth: []
-      - supabaseAuth: []
-      - bearerAuth: []
-      - supabaseAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
           description: ''
   /api/orders/{id}/:
     get:
@@ -2286,6 +2288,9 @@ components:
         avatar_url:
           type: string
           nullable: true
+    BlankEnum:
+      enum:
+      - ''
     Cart:
       type: object
       description: |-
@@ -2629,19 +2634,38 @@ components:
       description: |-
         Checkout body.
 
-        Exactly one destination is accepted: a saved ``address_id`` or an inline
-        ``shipping_address``. Prices, shipping and totals are deliberately absent -
-        the server derives every one of them from the cart.
+        Exactly one destination is accepted: a saved address id
+        (``shipping_address_id``, or its legacy alias ``address_id``) or an inline
+        ``shipping_address`` object. Prices, shipping and totals are deliberately
+        absent - the server derives every one of them from the cart.
+
+        ``payment_method`` is accepted and validated but not stored: the schema has no
+        such column and the MVP records every order as ``awaiting payment`` for a
+        staff member or gateway to complete.
       properties:
+        shipping_address_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Id of one of your saved addresses.
         address_id:
           type: string
           format: uuid
           nullable: true
-          description: One of your saved address ids.
         shipping_address:
           allOf:
           - $ref: '#/components/schemas/ShippingAddressRequest'
           nullable: true
+        payment_method:
+          default: ''
+          description: |-
+            Recorded for the client only; the MVP creates the order as pending payment.
+
+            * `card` - card
+            * `pay_on_delivery` - pay_on_delivery
+          oneOf:
+          - $ref: '#/components/schemas/PaymentMethodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
     OrderItem:
       type: object
       description: 'A purchased line. Read only: it is a historical record.'
@@ -3206,6 +3230,14 @@ components:
         avatar_url:
           type: string
           nullable: true
+    PaymentMethodEnum:
+      enum:
+      - card
+      - pay_on_delivery
+      type: string
+      description: |-
+        * `card` - card
+        * `pay_on_delivery` - pay_on_delivery
     PaymentStatusEnum:
       enum:
       - pending

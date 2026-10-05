@@ -18,7 +18,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { addressService } from '@/services/address.service'
 import { toast } from '@/store/uiStore'
 import { queryKeys } from '@/lib/queryClient'
-import type { Address } from '@/types'
+import type { Address, CheckoutPaymentMethod } from '@/types'
 import { ROUTES } from '@/utils/constants'
 
 const STEPS = [
@@ -30,12 +30,12 @@ const STEPS = [
 
 const PAYMENT_METHODS = [
   {
-    value: 'card',
+    value: 'card' as const,
     label: 'Card',
     description: 'Visa, Mastercard and American Express.',
   },
   {
-    value: 'pay_on_delivery',
+    value: 'pay_on_delivery' as const,
     label: 'Pay on delivery',
     description: 'Settle when your parcel arrives. Available nationwide.',
   },
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
   const [showAddressForm, setShowAddressForm] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState('card')
+  const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>('card')
 
   // Preselect the default address once addresses arrive.
   useEffect(() => {
@@ -92,7 +92,12 @@ export default function CheckoutPage() {
   const placeOrder = async () => {
     if (!selectedAddressId) return
     try {
-      const order = await checkout.mutateAsync({ address_id: selectedAddressId })
+      // Only the destination and the payment preference are sent; Django
+      // recalculates every price and decrements stock itself.
+      const order = await checkout.mutateAsync({
+        shipping_address_id: selectedAddressId,
+        payment_method: paymentMethod,
+      })
       navigate(ROUTES.orderSuccess(order.id), { replace: true })
     } catch {
       toast.error('Could not place the order', 'Review your bag and try again.')

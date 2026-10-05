@@ -172,7 +172,7 @@ function CurrencyAmount({ value, className }: { value: string | number; classNam
 
 function currencyCode(): string {
   // Kept as a function so the env read happens once at render time.
-  return import.meta.env.VITE_CURRENCY?.trim() || 'USD'
+  return import.meta.env.VITE_CURRENCY?.trim() || 'TND'
 }
 
 /* -------------------------------------------------------------------------- */

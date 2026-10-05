@@ -6,7 +6,7 @@ import { ArrowRight, KeyRound } from 'lucide-react'
 
 import { Alert, Button, Input, PasswordInput } from '@/components/common'
 import { authService } from '@/services/auth.service'
-import { getSupabaseClient, isSupabaseConfigured } from '@/lib/supabase'
+import { isSupabaseConfigured } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { messageOf } from '@/hooks/useCart'
 import { applyServerErrors, loginSchema, type LoginValues } from '@/utils/validation'
@@ -25,7 +25,7 @@ export default function LoginPage() {
   const redirectTo = state?.from ?? ROUTES.home
 
   const [formError, setFormError] = useState<string | null>(null)
-  const [notice, setNotice] = useState<string | null>(
+  const [notice] = useState<string | null>(
     state?.justRegistered
       ? 'Account created. Check your inbox if confirmation is required, then sign in.'
       : null,
@@ -163,5 +163,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-export { getSupabaseClient }

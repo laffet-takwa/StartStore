@@ -5,7 +5,7 @@ import {
   ROLE_META,
 } from '@/utils/constants'
 import { Badge } from './Display'
-import { StatusDot } from './Feedback'
+import { StatTNDot } from './Feedback'
 
 /**
  * Status pills.
@@ -18,7 +18,7 @@ export function OrderStatusBadge({ status, className }: { status: OrderStatus; c
   const meta = ORDER_STATUS_META[status] ?? ORDER_STATUS_META.pending
   return (
     <Badge className={className}>
-      <StatusDot className={meta.dot} />
+      <StatTNDot className={meta.dot} />
       {meta.label}
     </Badge>
   )
@@ -34,7 +34,7 @@ export function PaymentStatusBadge({
   const meta = PAYMENT_STATUS_META[status] ?? PAYMENT_STATUS_META.pending
   return (
     <Badge className={className}>
-      <StatusDot className={meta.dot} />
+      <StatTNDot className={meta.dot} />
       {meta.label}
     </Badge>
   )

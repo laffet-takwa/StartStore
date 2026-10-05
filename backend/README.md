@@ -192,7 +192,7 @@ An admin cannot demote themselves. Account deactivation happens in Supabase Auth
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `STARTSTORE_CURRENCY` | `USD` | Presentation only — `orders` has no currency column. |
+| `STARTSTORE_CURRENCY` | `TND` | Presentation only — `orders` has no currency column. |
 | `STARTSTORE_SHIPPING_FLAT_RATE` | `9.99` | |
 | `STARTSTORE_FREE_SHIPPING_THRESHOLD` | `100.00` | Subtotal at or above this ships free. |
 | `STARTSTORE_CART_ITEM_MAX_QUANTITY` | `99` | Per cart line. |

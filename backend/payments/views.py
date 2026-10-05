@@ -1,56 +1,60 @@
-"""Payment endpoint.
-
-Only staff may trigger a capture, because ``PaymentService.capture`` stands in
-for a real provider charge. In production this route is replaced by the
-provider's webhook handler; the service call stays the same.
-"""
+"""Payment endpoints."""
 
 from __future__ import annotations
 
-from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema
-from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from common.constants import PaymentStatus
-from common.exceptions import ResourceConflictError
-from common.permissions import IsAdmin
-from orders.models import Order
-from orders.serializers import OrderSerializer
-from payments.services import PaymentError, PaymentService
+from common.permissions import IsAdmin, IsManager, IsSales
+from payments.models import Payment
+from payments.serializers import PaymentCreateSerializer, PaymentSerializer
 
 
-class OrderPaymentCaptureView(APIView):
-    """Record a successful payment against an order (sandbox for the MVP)."""
+PAYMENT_FILTER_PARAMETERS = [
+    OpenApiParameter("sale", str, description="Filter by sale id."),
+    OpenApiParameter("repair", str, description="Filter by repair id."),
+    OpenApiParameter("ordering", str, description="Ordering field."),
+]
 
-    permission_classes = [IsAuthenticated, IsAdmin]
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all()
+    filterset_fields = ["sale", "repair", "payment_method"]
+    ordering_fields = ["paid_at", "amount"]
+    ordering = ["-paid_at"]
+    http_method_names = ["get", "post", "head", "options"]
+
+    def get_permissions(self):
+        if self.action in ("create",):
+            self.permission_classes = [IsAdmin | IsManager | IsSales]
+        else:
+            self.permission_classes = [IsAdmin | IsManager | IsSales]
+        return super().get_permissions()
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("sale", "repair")
+
+    def get_serializer_class(self):
+        if self.action in ("create",):
+            return PaymentCreateSerializer
+        return PaymentSerializer
 
     @extend_schema(
-        tags=["admin"],
-        summary="Mark an order as paid",
-        description=(
-            "Sandbox capture standing in for a real payment gateway. Flips "
-            "`payment_status` to `paid`. Staff only; a production deployment "
-            "replaces this with the provider's webhook handler."
-        ),
-        request=None,
-        responses={200: OrderSerializer},
+        tags=["payments"],
+        summary="List payments",
+        parameters=PAYMENT_FILTER_PARAMETERS,
+        responses={200: PaymentSerializer(many=True)},
     )
-    def post(self, request, order_id, *args, **kwargs) -> Response:
-        order = get_object_or_404(Order.objects.all(), pk=order_id)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
-        # `PaymentService.mark_paid` is idempotent so a gateway webhook can be
-        # retried safely, but a human-initiated capture should say so plainly.
-        if order.payment_status == PaymentStatus.PAID:
-            raise ResourceConflictError(
-                "This order has already been paid.", code="already_paid"
-            )
-
-        try:
-            order = PaymentService.capture(order)
-        except PaymentError as exc:
-            raise ResourceConflictError(exc.message, code=exc.code) from None
-
-        order = Order.objects.select_related("user").prefetch_related("items").get(pk=order.pk)
-        return Response(OrderSerializer(order, context={"request": request}).data)
+    @extend_schema(
+        tags=["payments"],
+        summary="Create a payment",
+        request=PaymentCreateSerializer,
+        responses={201: PaymentSerializer},
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)

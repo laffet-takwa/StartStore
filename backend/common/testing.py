@@ -229,8 +229,14 @@ class FakeSupabaseAuthGateway:
         )
 
     def get_user(self, access_token: str):
+        """Resolve a token to its auth user.
+
+        Real GoTrue rejects an expired token server-side, so the fake checks
+        ``exp`` too - otherwise expiry handling could never be tested.
+        """
         import base64
         import json
+        import time
 
         if not access_token:
             return None
@@ -243,7 +249,12 @@ class FakeSupabaseAuthGateway:
             sub = claims.get("sub")
         except (ValueError, json.JSONDecodeError):
             return None
-        return self.users.get(str(sub)) if sub else None
+        if not sub:
+            return None
+        expires_at = claims.get("exp")
+        if expires_at is not None and float(expires_at) <= time.time():
+            return None
+        return self.users.get(str(sub))
 
     def sign_out(self, access_token: str) -> None:
         self.signed_out.append(access_token)

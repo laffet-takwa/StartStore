@@ -17,7 +17,7 @@ export {
   ProductGridSkeleton,
   Skeleton,
   Spinner,
-  StatusDot,
+  StatTNDot,
   TableSkeleton,
 } from './Feedback'
 

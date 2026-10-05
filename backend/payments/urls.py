@@ -1,15 +1,11 @@
-"""Payment URL configuration (``/api/payments/``)."""
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from __future__ import annotations
+from payments.views import PaymentViewSet
 
-from django.urls import path
-
-from payments.views import OrderPaymentCaptureView
+router = DefaultRouter()
+router.register(r"", PaymentViewSet, basename="payment")
 
 urlpatterns = [
-    path(
-        "<uuid:order_id>/capture/",
-        OrderPaymentCaptureView.as_view(),
-        name="payment-capture",
-    ),
+    path("", include(router.urls)),
 ]

@@ -84,7 +84,7 @@ The backend must be running on the port in `VITE_API_URL` (default
 | `VITE_API_URL` | yes | Django REST base URL, no trailing slash |
 | `VITE_SUPABASE_URL` | optional | Only for the alternative Supabase sign-in path |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | optional | Publishable/anon key — safe in a `VITE_` variable |
-| `VITE_CURRENCY` | no | Display currency, default `USD` |
+| `VITE_CURRENCY` | no | Display currency, default `TND` |
 | `VITE_STORE_NAME` | no | Default `StartStore` |
 
 > **Never** add a `VITE_` prefix to the Supabase **service-role** key. Anything

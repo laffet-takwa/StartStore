@@ -2,12 +2,25 @@ import { useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
+  BarChart3,
+  BookOpen,
   ClipboardList,
+  Cog,
+  Container,
   FolderTree,
+  Gear,
   LayoutDashboard,
+  MessageSquare,
   Package,
+  PackageOpen,
+  Puzzle,
+  Receipt,
+  Settings,
+  ShoppingCart,
   Users,
+  Wrench,
   X,
+  Zap,
 } from 'lucide-react'
 
 import { Toaster } from '@/components/common/Overlay'
@@ -17,10 +30,24 @@ import { ROUTES } from '@/utils/constants'
 
 const ADMIN_NAV = [
   { to: ROUTES.admin.dashboard, label: 'Dashboard', icon: LayoutDashboard },
+  { type: 'divider', label: 'Operations' },
+  { to: ROUTES.admin.repairs, label: 'Repairs', icon: Wrench },
+  { to: ROUTES.admin.customers, label: 'Customers', icon: Users },
+  { to: ROUTES.admin.devices, label: 'Devices', icon: Container },
+  { type: 'divider', label: 'Commerce' },
   { to: ROUTES.admin.products, label: 'Products', icon: Package },
-  { to: ROUTES.admin.categories, label: 'Categories', icon: FolderTree },
-  { to: ROUTES.admin.orders, label: 'Orders', icon: ClipboardList },
-  { to: ROUTES.admin.users, label: 'Users', icon: Users },
+  { to: ROUTES.admin.inventory, label: 'Inventory', icon: PackageOpen },
+  { to: ROUTES.admin.sales, label: 'Sales', icon: ShoppingCart },
+  { to: ROUTES.admin.invoices, label: 'Invoices', icon: Receipt },
+  { type: 'divider', label: 'Content' },
+  { to: ROUTES.admin.content, label: 'Educational Content', icon: BookOpen },
+  { to: ROUTES.admin.robotics, label: 'Robotics Projects', icon: Puzzle },
+  { type: 'divider', label: 'Management' },
+  { to: ROUTES.admin.employees, label: 'Employees', icon: Users },
+  { to: ROUTES.admin.reports, label: 'Reports', icon: BarChart3 },
+  { type: 'divider', label: 'System' },
+  { to: ROUTES.admin.notifications, label: 'Notifications', icon: MessageSquare },
+  { to: ROUTES.admin.users, label: 'Settings', icon: Settings },
 ]
 
 /**
@@ -65,23 +92,35 @@ export function AdminLayout() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <nav className="flex-1 space-y-0.5 p-3">
-              {ADMIN_NAV.map((item) => (
-                <NavItem
-                  key={item.to}
-                  to={item.to}
-                  icon={<item.icon className="h-4.5 w-4.5" />}
-                  label={item.label}
-                  onClick={() => setMobileOpen(false)}
-                />
-              ))}
-            </nav>
-            <div className="border-t border-zinc-200 p-4">
-              <p className="truncate text-sm font-medium text-ink">{displayName}</p>
-              <p className="mt-0.5 text-2xs text-ink-muted">
-                {isAdmin ? 'Administrator' : 'Staff'}
+      <nav className="flex-1 space-y-0.5 p-3">
+        {ADMIN_NAV.map((item, index) => {
+          if (item.type === 'divider') {
+            return (
+              <p
+                key={`divider-${index}`}
+                className="mt-3 mb-1 px-3 text-2xs font-semibold uppercase tracking-[0.08em] text-ink-faint"
+              >
+                {item.label}
               </p>
-            </div>
+            )
+          }
+          return (
+            <NavItem
+              key={item.to}
+              to={item.to}
+              icon={<item.icon className="h-4.5 w-4.5" />}
+              label={item.label}
+              onClick={() => setMobileOpen(false)}
+            />
+          )
+        })}
+      </nav>
+      <div className="border-t border-zinc-200 p-4">
+        <p className="truncate text-sm font-medium text-ink">{displayName}</p>
+        <p className="mt-0.5 text-2xs text-ink-muted">
+          {isAdmin ? 'Administrator' : 'Staff'}
+        </p>
+      </div>
           </aside>
         </div>
       )}
@@ -143,14 +182,26 @@ function AdminSidebarContent({
       </Link>
 
       <nav className="flex-1 space-y-0.5 p-3">
-        {ADMIN_NAV.map((item) => (
-          <NavItem
-            key={item.to}
-            to={item.to}
-            icon={<item.icon className="h-4.5 w-4.5" />}
-            label={item.label}
-          />
-        ))}
+        {ADMIN_NAV.map((item, index) => {
+          if (item.type === 'divider') {
+            return (
+              <p
+                key={`divider-${index}`}
+                className="mt-3 mb-1 px-3 text-2xs font-semibold uppercase tracking-[0.08em] text-ink-faint"
+              >
+                {item.label}
+              </p>
+            )
+          }
+          return (
+            <NavItem
+              key={item.to}
+              to={item.to}
+              icon={<item.icon className="h-4.5 w-4.5" />}
+              label={item.label}
+            />
+          )
+        })}
       </nav>
 
       <div className="border-t border-zinc-200 p-4">
