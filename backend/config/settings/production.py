@@ -1,56 +1,43 @@
-"""Production settings.
-
-Every security sensitive value is mandatory here, which makes an
-under-configured deployment fail fast and loudly instead of silently running
-in a permissive mode.
 """
-
-from __future__ import annotations
-
-from config.env import ImproperlyConfiguredEnv, assert_secure_secret, env_bool, env_list, env_str
-from config.settings.base import *  # noqa: F401,F403
-from config.settings.base import REST_FRAMEWORK, SPECTACULAR_SETTINGS  # noqa: F401
+Production settings for STAR STORE MANAGER project.
+"""
+from .base import *
 
 DEBUG = False
 
-# Refuses the example placeholder and any key shorter than 50 characters. Without
-# this check a deployment could silently ship the documented default signing key,
-# which would let anyone forge access tokens.
-assert_secure_secret(env_str("DJANGO_SECRET_KEY"))
-
-_allowed_hosts = env_list("DJANGO_ALLOWED_HOSTS")
-if not _allowed_hosts:
-    raise ImproperlyConfiguredEnv("DJANGO_ALLOWED_HOSTS is required in production")
-ALLOWED_HOSTS = _allowed_hosts
-
-if env_bool("USE_SQLITE", False):
-    raise ImproperlyConfiguredEnv("USE_SQLITE must be false in production")
-
-if not env_str("SUPABASE_URL") or not env_str("SUPABASE_ANON_KEY"):
-    raise ImproperlyConfiguredEnv(
-        "SUPABASE_URL and SUPABASE_ANON_KEY are required in production: they verify "
-        "sign-in and create the profile rows."
-    )
-
-REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ["rest_framework.renderers.JSONRenderer"]  # noqa: F405
-
-# Force HTTPS end to end.
+# SECURITY
 SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31_536_000  # 1 year
+SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-
-# Derived from DEBUG in base.py, so it must be restated here: base computes these
-# before this module sets DEBUG = False.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
 
-# The SPA talks to this API with bearer tokens; no cookie jar is involved.
-CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS")
-if not CORS_ALLOWED_ORIGINS:
-    raise ImproperlyConfiguredEnv("CORS_ALLOWED_ORIGINS is required in production")
+# Allowed hosts must be set in production
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
-SPECTACULAR_SETTINGS["SERVE_INCLUDE_SCHEMA"] = False  # noqa: F405
+# Static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'STAR STORE <noreply@starstore.tn>')
+
+# Database connection pooling
+DATABASES['default']['CONN_MAX_AGE'] = 60
+
+# Logging - less verbose in production
+LOGGING['loggers']['apps']['level'] = 'INFO'
+LOGGING['loggers']['django']['level'] = 'WARNING'
+
+# Security headers
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

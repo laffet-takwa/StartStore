@@ -1,24 +1,33 @@
-"""Local development settings.
-
-* ``DEBUG = True`` and the browsable API renderer are enabled.
-* SQLite is used when ``USE_SQLITE=true`` so the project boots before a
-  Supabase database has been wired up.
 """
-
-from __future__ import annotations
-
-from config.settings.base import *  # noqa: F401,F403
-from config.settings.base import REST_FRAMEWORK, SPECTACULAR_SETTINGS  # noqa: F401
+Development settings for STAR STORE MANAGER project.
+"""
+from .base import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
-SECURE_SSL_REDIRECT = False
-
-REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [  # noqa: F405
-    "rest_framework.renderers.JSONRenderer",
-    "rest_framework.renderers.BrowsableAPIRenderer",
+# Add debug toolbar
+INSTALLED_APPS += [
+    'debug_toolbar',
+    'django_extensions',
 ]
 
-SPECTACULAR_SETTINGS["SERVE_INCLUDE_SCHEMA"] = False  # noqa: F405
+MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+] + MIDDLEWARE
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
+
+# Email backend for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Disable password validators for easier development
+AUTH_PASSWORD_VALIDATORS = []
+
+# Logging - more verbose in development
+LOGGING['loggers']['apps']['level'] = 'DEBUG'
+LOGGING['loggers']['django']['level'] = 'INFO'

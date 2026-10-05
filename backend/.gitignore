@@ -1,59 +1,75 @@
-# --------------------------------------------------------------------------- #
 # Python
-# --------------------------------------------------------------------------- #
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 build/
+develop-eggs/
 dist/
-*.egg-info/
+downloads/
+eggs/
 .eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# --------------------------------------------------------------------------- #
 # Virtual environments
-# --------------------------------------------------------------------------- #
-.venv/
-venv/
-env/
-ENV/
-
-# --------------------------------------------------------------------------- #
-# Secrets - never commit these
-# --------------------------------------------------------------------------- #
 .env
-.env.*
-!.env.example
-*.pem
-*.key
-service_role*.json
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# --------------------------------------------------------------------------- #
-# Django
-# --------------------------------------------------------------------------- #
-*.log
-db.sqlite3
-db.sqlite3-journal
-.smoke_*.txt
-media/
-staticfiles/
-local_settings.py
-
-# --------------------------------------------------------------------------- #
-# Tests / tooling caches
-# --------------------------------------------------------------------------- #
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-coverage.xml
-
-# --------------------------------------------------------------------------- #
-# Editors / OS
-# --------------------------------------------------------------------------- #
+# IDE
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Migrations (keep initial migrations, ignore auto-generated)
+# Uncomment below if you want to ignore all migrations
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Docker
+.docker/
+docker-compose.override.yml
