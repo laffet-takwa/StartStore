@@ -358,6 +358,12 @@ export interface PaginatedResponse<T> {
   results: T[]
 }
 
+export interface LoginResponse {
+  access: string
+  refresh: string
+  user: Employee
+}
+
 export interface ApiError {
   detail?: string
   code?: string

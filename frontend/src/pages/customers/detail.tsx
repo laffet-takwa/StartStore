@@ -1,12 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { customersApi } from '@/api/customers.api'
-import { devicesApi } from '@/api/devices.api'
-import { repairsApi } from '@/api/repairs.api'
-import { salesApi } from '@/api/sales.api'
-import { paymentsApi } from '@/api/payments.api'
-import { ArrowLeft, Phone, Mail, MapPin, Building2, Calendar } from 'lucide-react'
-import type { Customer, Device, RepairTicket, Sale, Payment } from '@/types'
+import { ArrowLeft } from 'lucide-react'
+import type { Customer } from '@/types'
 
 export default function CustomerDetailPage() {
   const { id } = useParams()

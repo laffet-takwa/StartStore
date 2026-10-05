@@ -13,7 +13,6 @@ import {
   ArrowDownRight,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { format } from 'date-fns'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import type { DashboardOverview, RepairTicket, Sale, Product } from '@/types'
 
@@ -156,7 +155,7 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip formatter={(value: number) => `${value.toLocaleString()} TND`} />
+                <Tooltip formatter={(value: number | string) => `${Number(value).toLocaleString()} TND`} />
                 <Bar dataKey="value" fill="#2563EB" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

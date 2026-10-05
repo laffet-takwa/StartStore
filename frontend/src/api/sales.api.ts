@@ -1,5 +1,5 @@
 import api from '@/api/axios'
-import type { Sale, SaleItem, PaginatedResponse } from '@/types'
+import type { Sale, PaginatedResponse } from '@/types'
 
 export const salesApi = {
   list: (params?: Record<string, unknown>) =>
