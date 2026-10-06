@@ -3,6 +3,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { ProtectedRoute } from '@/components/common/protected-route'
 import { RoleGuard } from '@/components/common/role-guard'
 import LoginPage from '@/pages/login'
+import SignupPage from '@/pages/signup'
 import DashboardPage from '@/pages/dashboard'
 import CustomersPage from '@/pages/customers'
 import CustomerDetailPage from '@/pages/customers/detail'
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />,
   },
   {
     path: '/track',

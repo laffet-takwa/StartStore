@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { devicesApi } from '@/api/devices.api'
-import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Eye, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import type { Device } from '@/types'
@@ -61,48 +61,58 @@ export default function DevicesPage() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Device</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Type</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Brand</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Model</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Repairs</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Created</th>
-                    <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {data?.results?.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-muted">No devices found.</td>
+<thead>
+                    <tr className="border-b border-slate-200 bg-slate-50">
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Device</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Image</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Type</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Brand</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Model</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Repairs</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Created</th>
+                      <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
                     </tr>
-                  ) : (
-                    data?.results?.map((device: Device) => (
-                      <tr key={device.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3">
-                          <Link to={`/devices/${device.id}`} className="font-medium text-slate-900 hover:text-primary">
-                            {device.device_type_display}
-                          </Link>
-                        </td>
-                        <td className="px-4 py-3 text-slate-600">{device.customer_name}</td>
-                        <td className="px-4 py-3 text-slate-600">{device.device_type_display}</td>
-                        <td className="px-4 py-3 text-slate-600">{device.brand}</td>
-                        <td className="px-4 py-3 text-slate-600">{device.model}</td>
-                        <td className="px-4 py-3 text-slate-600">{device.repair_count}</td>
-                        <td className="px-4 py-3 text-slate-600">{new Date(device.created_at).toLocaleDateString()}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-1">
-                            <Link to={`/devices/${device.id}`} className="p-1.5 hover:bg-slate-100 rounded"><Eye className="h-4 w-4 text-slate-600" /></Link>
-                            <Link to={`/devices/${device.id}/edit`} className="p-1.5 hover:bg-slate-100 rounded"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
-                            <button onClick={() => setDeleteId(device.id)} className="p-1.5 hover:bg-danger/10 rounded"><Trash2 className="h-4 w-4 text-danger" /></button>
-                          </div>
-                        </td>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data?.results?.length === 0 ? (
+                      <tr>
+                        <td colSpan={9} className="px-4 py-8 text-center text-muted">No devices found.</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
+                    ) : (
+                      data?.results?.map((device: Device) => (
+                        <tr key={device.id} className="hover:bg-slate-50">
+                          <td className="px-4 py-3">
+                            <Link to={`/devices/${device.id}`} className="font-medium text-slate-900 hover:text-primary">
+                              {device.device_type_display}
+                            </Link>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="h-12 w-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+                              {device.device_type === 'laptop' && <Laptop className="h-6 w-6 text-slate-400" />}
+                              {device.device_type === 'desktop' && <Monitor className="h-6 w-6 text-slate-400" />}
+                              {device.device_type === 'phone' && <Smartphone className="h-6 w-6 text-slate-400" />}
+                              {device.device_type === 'tablet' && <Tablet className="h-6 w-6 text-slate-400" />}
+                              {device.device_type === 'other' && <Monitor className="h-6 w-6 text-slate-400" />}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-slate-600">{device.customer_name}</td>
+                          <td className="px-4 py-3 text-slate-600">{device.device_type_display}</td>
+                          <td className="px-4 py-3 text-slate-600">{device.brand}</td>
+                          <td className="px-4 py-3 text-slate-600">{device.model}</td>
+                          <td className="px-4 py-3 text-slate-600">{device.repair_count}</td>
+                          <td className="px-4 py-3 text-slate-600">{new Date(device.created_at).toLocaleDateString()}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-end gap-1">
+                              <Link to={`/devices/${device.id}`} className="p-1.5 hover:bg-slate-100 rounded"><Eye className="h-4 w-4 text-slate-600" /></Link>
+                              <Link to={`/devices/${device.id}/edit`} className="p-1.5 hover:bg-slate-100 rounded"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
+                              <button onClick={() => setDeleteId(device.id)} className="p-1.5 hover:bg-danger/10 rounded"><Trash2 className="h-4 w-4 text-danger" /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
               </table>
             </div>
 

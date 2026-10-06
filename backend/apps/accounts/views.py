@@ -40,6 +40,30 @@ class LoginView(TokenObtainPairView):
         })
 
 
+class SignupView(viewsets.GenericViewSet):
+    """Public signup view."""
+
+    permission_classes = [AllowAny]
+    serializer_class = EmployeeCreateSerializer
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        user.is_staff = False
+        user.is_superuser = False
+        user.save()
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        return Response({
+            'access': access_token,
+            'refresh': str(refresh),
+            'user': EmployeeSerializer(user).data,
+        }, status=status.HTTP_201_CREATED)
+
+
 class LogoutView(viewsets.GenericViewSet):
     """Logout view to blacklist refresh token."""
 

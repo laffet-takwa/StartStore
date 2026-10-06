@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { customersApi } from '@/api/customers.api'
 import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui'
 
 const customerSchema = z.object({
   first_name: z.string().min(1, 'First name is required'),
@@ -143,16 +144,15 @@ export default function CustomerEditPage() {
         </div>
 
         <div className="flex gap-3 justify-end">
-          <button type="button" onClick={() => navigate(-1)} className="px-4 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50">
+          <Button type="button" variant="outline" onClick={() => navigate(-1)}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             disabled={isSubmitting || mutation.isPending}
-            className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
           >
             {mutation.isPending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

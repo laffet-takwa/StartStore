@@ -53,16 +53,17 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-        {visible.map((item) => (
+        {visible.map((item, idx) => (
           <NavLink
             key={item.to}
             to={item.to}
             onClick={onClose}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive ? 'bg-primary text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'
+              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all animate-slide-in-right ${
+                isActive ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-300 hover:bg-white/10 hover:text-white'
               }`
             }
+            style={{ animationDelay: `${idx * 30}ms`, animationFillMode: 'both' }}
           >
             <item.icon className="h-4 w-4" />
             {!collapsed && <span>{item.label}</span>}

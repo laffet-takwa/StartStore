@@ -11,7 +11,7 @@ from apps.accounts.models import Employee
 from apps.customers.models import Customer, Device, DeviceType
 from apps.inventory.models import Category, Supplier, Product, InventoryMovement
 from apps.repairs.models import RepairTicket, RepairStatus
-from apps.sales.models import Sale, SaleItem, Payment, PaymentMethod
+from apps.sales.models import Sale, SaleItem, Payment
 from apps.invoices.models import Invoice
 
 
@@ -310,7 +310,7 @@ class Command(BaseCommand):
             Payment.objects.create(
                 sale=sale,
                 amount=sale.total,
-                payment_method=random.choice(list(PaymentMethod.values)),
+                payment_method=random.choice(['cash', 'card', 'bank_transfer', 'other']),
                 paid_at=sale.confirmed_at,
             )
 

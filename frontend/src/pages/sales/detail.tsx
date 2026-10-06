@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { salesApi } from '@/api'
-import { ArrowLeft, User, Calendar, CreditCard } from 'lucide-react'
+import { ArrowLeft, User, Calendar, CreditCard, Image as ImageIcon } from 'lucide-react'
 import type { Sale, SaleItem } from '@/types'
 
 export default function SaleDetailPage() {
@@ -77,9 +77,22 @@ export default function SaleDetailPage() {
               <div className="space-y-3">
                 {items.map((item: SaleItem) => (
                   <div key={item.id} className="flex items-center justify-between p-3 rounded border border-slate-100">
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">{item.product.name}</p>
-                      <p className="text-xs text-muted">x{item.quantity} @ {item.unit_price.toLocaleString()} TND</p>
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-12 w-12 rounded-lg overflow-hidden border border-slate-200 bg-white">
+                        {item.product.image ? (
+                          <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                        ) : item.product.images && item.product.images.length > 0 ? (
+                          <img src={item.product.images[0].image} alt={item.product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400">
+                            <ImageIcon className="h-6 w-6" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{item.product.name}</p>
+                        <p className="text-xs text-muted">x{item.quantity} @ {item.unit_price.toLocaleString()} TND</p>
+                      </div>
                     </div>
                     <span className="text-sm font-medium text-slate-900">{item.total_price.toLocaleString()} TND</span>
                   </div>

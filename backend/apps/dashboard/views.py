@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Sum, Count, Q, Avg
+from django.db.models import Sum, Count, Q, Avg, F
 from django.utils import timezone
 from datetime import timedelta, date
 
@@ -58,7 +58,7 @@ class DashboardViewSet(viewsets.GenericViewSet):
         total_products = Product.objects.filter(is_active=True).count()
         low_stock_products = Product.objects.filter(
             is_active=True,
-            stock_quantity__lte=models.F('minimum_stock')
+            stock_quantity__lte=F('minimum_stock')
         ).count()
         out_of_stock_products = Product.objects.filter(is_active=True, stock_quantity=0).count()
 
@@ -67,7 +67,7 @@ class DashboardViewSet(viewsets.GenericViewSet):
         recent_sales = Sale.objects.filter(status=Sale.Status.CONFIRMED).select_related('customer', 'employee').order_by('-confirmed_at')[:5]
         low_stock = Product.objects.filter(
             is_active=True,
-            stock_quantity__lte=models.F('minimum_stock')
+            stock_quantity__lte=F('minimum_stock')
         ).select_related('category').order_by('stock_quantity')[:10]
 
         from apps.repairs.serializers import RepairListSerializer
@@ -213,7 +213,7 @@ class ReportsViewSet(viewsets.GenericViewSet):
             total=Count('id'),
             completed=Count('id', filter=Q(status=RepairStatus.DELIVERED)),
             avg_completion_days=Avg(
-                (models.F('delivered_at') - models.F('received_at')) / 86400000,
+                (F('delivered_at') - F('received_at')) / 86400000,
                 filter=Q(status=RepairStatus.DELIVERED)
             )
         ).order_by('-total')
@@ -234,7 +234,7 @@ class ReportsViewSet(viewsets.GenericViewSet):
         avg_repair_days = repairs.filter(
             status=RepairStatus.DELIVERED
         ).aggregate(
-            avg=Avg((models.F('delivered_at') - models.F('received_at')) / 86400000)
+            avg=Avg((F('delivered_at') - F('received_at')) / 86400000)
         )['avg']
 
         return Response({
@@ -256,17 +256,17 @@ class ReportsViewSet(viewsets.GenericViewSet):
         """Inventory report."""
         # Stock valuation
         total_stock_value = Product.objects.filter(is_active=True).aggregate(
-            total=Sum(models.F('stock_quantity') * models.F('purchase_price'))
+            total=Sum(F('stock_quantity') * F('purchase_price'))
         )['total'] or 0
 
         total_retail_value = Product.objects.filter(is_active=True).aggregate(
-            total=Sum(models.F('stock_quantity') * models.F('selling_price'))
+            total=Sum(F('stock_quantity') * F('selling_price'))
         )['total'] or 0
 
         # Low stock products
         low_stock = Product.objects.filter(
             is_active=True,
-            stock_quantity__lte=models.F('minimum_stock')
+            stock_quantity__lte=F('minimum_stock')
         ).select_related('category').order_by('stock_quantity')
 
         # Top selling products (last 30 days)

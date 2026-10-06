@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { publicRepairsApi } from '@/api'
-import { Search, Wrench, CheckCircle, AlertCircle } from 'lucide-react'
+import { Search, Wrench, CheckCircle, AlertCircle, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function TrackPage() {
@@ -66,7 +66,13 @@ export default function TrackPage() {
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-success" />
+                <div className="relative h-20 w-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+                  {(tracking as any).device.type === 'laptop' && <Laptop className="h-10 w-10 text-slate-400" />}
+                  {(tracking as any).device.type === 'desktop' && <Monitor className="h-10 w-10 text-slate-400" />}
+                  {(tracking as any).device.type === 'phone' && <Smartphone className="h-10 w-10 text-slate-400" />}
+                  {(tracking as any).device.type === 'tablet' && <Tablet className="h-10 w-10 text-slate-400" />}
+                  {(tracking as any).device.type === 'other' && <Monitor className="h-10 w-10 text-slate-400" />}
+                </div>
                 <div>
                   <p className="text-sm font-medium text-slate-900">{(tracking as any).repair.status_label}</p>
                   <p className="text-xs text-muted">Last updated: {new Date((tracking as any).repair.last_updated).toLocaleString()}</p>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { productsApi } from '@/api'
-import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Eye, Image } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import type { Product } from '@/types'
@@ -64,6 +64,7 @@ export default function ProductsPage() {
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50">
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Product</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-600">Image</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">SKU</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Category</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-600">Price</th>
@@ -74,12 +75,23 @@ export default function ProductsPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {data?.results?.length === 0 ? (
-                    <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">No products found.</td></tr>
+                    <tr><td colSpan={8} className="px-4 py-8 text-center text-muted">No products found.</td></tr>
                   ) : (
                     data?.results?.map((product: Product) => (
                       <tr key={product.id} className="hover:bg-slate-50">
                         <td className="px-4 py-3">
                           <Link to={`/products/${product.id}`} className="font-medium text-slate-900 hover:text-primary">{product.name}</Link>
+                        </td>
+                        <td className="px-4 py-3">
+                          {product.image ? (
+                            <img src={product.image} alt={product.name} className="h-12 w-12 object-cover rounded" />
+                          ) : product.images && product.images.length > 0 ? (
+                            <img src={product.images[0].image} alt={product.name} className="h-12 w-12 object-cover rounded" />
+                          ) : (
+                            <div className="h-12 w-12 rounded bg-slate-100 flex items-center justify-center">
+                              <Image className="h-5 w-5 text-slate-400" />
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-3 text-slate-600">{product.sku}</td>
                         <td className="px-4 py-3 text-slate-600">{product.category_name || '-'}</td>

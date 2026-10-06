@@ -5,6 +5,16 @@ export const authApi = {
   login: (email: string, password: string) =>
     api.post<LoginResponse>('/auth/login/', { email, password }).then((r) => r.data),
 
+  signup: (data: {
+    email: string
+    password: string
+    first_name: string
+    last_name: string
+    phone?: string
+    role?: string
+  }) =>
+    api.post<LoginResponse>('/auth/signup/', data).then((r) => r.data),
+
   logout: () => api.post('/auth/logout/').then((r) => r.data),
 
   me: () => api.get<Employee>('/auth/me/').then((r) => r.data),

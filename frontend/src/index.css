@@ -2,12 +2,149 @@
 
 @theme {
   --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
   --color-secondary: #0F172A;
   --color-background: #F8FAFC;
   --color-surface: #FFFFFF;
+  --color-surface-secondary: #F1F5F9;
   --color-muted: #64748B;
   --color-success: #16A34A;
   --color-warning: #F59E0B;
   --color-danger: #DC2626;
-  --color-info: #0EA5E9;
+  --color-info: #0284C7;
+
+  --color-dark-background: #0B1120;
+  --color-dark-surface: #111827;
+  --color-dark-surface-secondary: #1E293B;
+  --color-dark-primary: #3B82F6;
+  --color-dark-primary-hover: #60A5FA;
+  --color-dark-text: #F8FAFC;
+  --color-dark-text-secondary: #CBD5E1;
+  --color-dark-muted: #94A3B8;
+  --color-dark-border: #334155;
+  --color-dark-success: #22C55E;
+  --color-dark-warning: #FBBF24;
+  --color-dark-danger: #EF4444;
+  --color-dark-info: #38BDF8;
+
+  --animate-fade-in: fade-in 0.4s ease-out;
+  --animate-slide-up: slide-up 0.45s ease-out;
+  --animate-slide-in-right: slide-in-right 0.35s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 2.5s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+html {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html:not(.dark) {
+  color-scheme: light;
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-slate-900 antialiased;
+  }
+
+  html.dark body {
+    @apply bg-dark-background text-dark-text;
+  }
+}
+
+@layer components {
+  .brand-gradient {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  }
+
+  html.dark .brand-gradient {
+    background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+  }
+}
+
+@layer utilities {
+  .surface-base {
+    @apply bg-surface border border-slate-200;
+  }
+
+  html.dark .surface-base {
+    @apply bg-dark-surface border-dark-border;
+  }
+
+  .surface-secondary {
+    @apply bg-surface-secondary;
+  }
+
+  html.dark .surface-secondary {
+    @apply bg-dark-surface-secondary;
+  }
+
+  .text-base {
+    @apply text-slate-900;
+  }
+
+  html.dark .text-base {
+    @apply text-dark-text;
+  }
+
+  .text-muted-base {
+    @apply text-muted;
+  }
+
+  html.dark .text-muted-base {
+    @apply text-dark-muted;
+  }
+
+  .border-base {
+    @apply border-slate-200;
+  }
+
+  html.dark .border-base {
+    @apply border-dark-border;
+  }
 }

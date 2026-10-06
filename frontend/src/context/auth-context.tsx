@@ -6,6 +6,14 @@ interface AuthContextType {
   user: Employee | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
+  signup: (data: {
+    email: string
+    password: string
+    first_name: string
+    last_name: string
+    phone?: string
+    role?: string
+  }) => Promise<void>
   logout: () => Promise<void>
   updateProfile: (data: Partial<Employee>) => Promise<void>
 }
@@ -40,6 +48,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user)
   }
 
+  const signup = async (data: {
+    email: string
+    password: string
+    first_name: string
+    last_name: string
+    phone?: string
+    role?: string
+  }) => {
+    const res = await api.post('/auth/signup/', data)
+    const { access, refresh, user } = res.data
+    localStorage.setItem('access_token', access)
+    localStorage.setItem('refresh_token', refresh)
+    setUser(user)
+  }
+
   const logout = async () => {
     const refresh = localStorage.getItem('refresh_token')
     try {
@@ -59,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   )

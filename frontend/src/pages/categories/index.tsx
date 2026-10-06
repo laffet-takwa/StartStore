@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { categoriesApi } from '@/api'
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Image } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function CategoriesPage() {
@@ -103,37 +103,47 @@ export default function CategoriesPage() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Name</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Products</th>
-                    <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
-                    <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {data?.results?.length === 0 ? (
-                    <tr><td colSpan={4} className="px-4 py-8 text-center text-muted">No categories found.</td></tr>
-                  ) : (
-                    data?.results?.map((cat: any) => (
-                      <tr key={cat.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 font-medium text-slate-900">{cat.name}</td>
-                        <td className="px-4 py-3 text-slate-600">{cat.product_count}</td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${cat.is_active ? 'bg-success/10 text-success' : 'bg-slate-100 text-slate-600'}`}>
-                            {cat.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-1">
-                            <button onClick={() => openEdit(cat)} className="p-1.5 hover:bg-slate-100 rounded"><Edit2 className="h-4 w-4 text-slate-600" /></button>
-                            <button onClick={() => setDeleteId(cat.id)} className="p-1.5 hover:bg-danger/10 rounded"><Trash2 className="h-4 w-4 text-danger" /></button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
+<thead>
+                    <tr className="border-b border-slate-200 bg-slate-50">
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Category</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Image</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Products</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
+                      <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data?.results?.length === 0 ? (
+                      <tr><td colSpan={5} className="px-4 py-8 text-center text-muted">No categories found.</td></tr>
+                    ) : (
+                      data?.results?.map((cat: any) => (
+                        <tr key={cat.id} className="hover:bg-slate-50">
+                          <td className="px-4 py-3 font-medium text-slate-900">{cat.name}</td>
+                          <td className="px-4 py-3">
+                            {cat.image ? (
+                              <img src={cat.image} alt={cat.name} className="h-12 w-12 object-cover rounded" />
+                            ) : (
+                              <div className="h-12 w-12 rounded bg-slate-100 flex items-center justify-center">
+                                <Image className="h-5 w-5 text-slate-400" />
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-slate-600">{cat.product_count}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${cat.is_active ? 'bg-success/10 text-success' : 'bg-slate-100 text-slate-600'}`}>
+                              {cat.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-end gap-1">
+                              <button onClick={() => openEdit(cat)} className="p-1.5 hover:bg-slate-100 rounded"><Edit2 className="h-4 w-4 text-slate-600" /></button>
+                              <button onClick={() => setDeleteId(cat.id)} className="p-1.5 hover:bg-danger/10 rounded"><Trash2 className="h-4 w-4 text-danger" /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
               </table>
             </div>
 

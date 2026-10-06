@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { productsApi, categoriesApi, suppliersApi } from '@/api'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Image, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
 const productSchema = z.object({
@@ -100,6 +100,28 @@ export default function ProductEditPage() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="bg-surface rounded-lg border border-slate-200 p-6 space-y-5">
+        {isEdit && product && (product.image || product.images?.length) && (
+          <div className="bg-slate-50 rounded-lg p-4">
+            <label className="block text-sm font-medium text-slate-700 mb-2">Current Image</label>
+            <div className="flex items-center gap-4">
+              <div className="relative h-20 w-20 rounded-lg overflow-hidden border border-slate-200 bg-white">
+                {product.image ? (
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                ) : product.images && product.images.length > 0 ? (
+                  <img src={product.images[0].image} alt={product.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                    <Image className="h-8 w-8" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900">{product.name}</p>
+                <p className="text-xs text-muted">SKU: {product.sku}</p>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>

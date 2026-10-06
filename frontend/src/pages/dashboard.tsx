@@ -50,15 +50,19 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
         <p className="text-sm text-muted">Here's what's happening today</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpiCards.map((card) => (
-          <div key={card.key} className="bg-surface rounded-lg border border-slate-200 p-5">
+        {kpiCards.map((card, idx) => (
+          <div
+            key={card.key}
+            className="bg-surface rounded-lg border border-slate-200 p-5 card-hover"
+            style={{ animationDelay: `${idx * 60}ms`, animationFillMode: 'both' }}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted">{card.label}</p>
@@ -73,7 +77,7 @@ export default function DashboardPage() {
           </div>
         ))}
 
-        <div className="bg-surface rounded-lg border border-slate-200 p-5">
+        <div className="bg-surface rounded-lg border border-slate-200 p-5 card-hover" style={{ animationDelay: '120ms', animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted">Customers</p>
@@ -85,7 +89,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-lg border border-slate-200 p-5">
+        <div className="bg-surface rounded-lg border border-slate-200 p-5 card-hover" style={{ animationDelay: '160ms', animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted">Products</p>
@@ -97,7 +101,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-lg border border-slate-200 p-5">
+        <div className="bg-surface rounded-lg border border-slate-200 p-5 card-hover" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted">Active Repairs</p>
@@ -109,7 +113,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-lg border border-slate-200 p-5">
+        <div className="bg-surface rounded-lg border border-slate-200 p-5 card-hover" style={{ animationDelay: '240ms', animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted">Completed Repairs</p>
@@ -121,7 +125,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-lg border border-slate-200 p-5">
+        <div className="bg-surface rounded-lg border border-slate-200 p-5 card-hover" style={{ animationDelay: '280ms', animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted">Pending Repairs</p>
@@ -133,7 +137,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-lg border border-slate-200 p-5">
+        <div className="bg-surface rounded-lg border border-slate-200 p-5 card-hover" style={{ animationDelay: '320ms', animationFillMode: 'both' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted">Low Stock</p>

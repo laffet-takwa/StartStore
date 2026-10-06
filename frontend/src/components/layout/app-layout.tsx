@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from '@/components/layout/sidebar'
 import { TopNavbar } from '@/components/layout/top-navbar'
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav'
 import { Toaster } from 'sonner'
 
 export function AppLayout() {
@@ -16,11 +17,12 @@ export function AppLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         <TopNavbar onToggleSidebar={() => setSidebarCollapsed((c) => !c)} />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 lg:pb-6">
           <Outlet />
         </main>
       </div>
 
+      <MobileBottomNav />
       <Toaster position="bottom-right" richColors />
     </div>
   )
