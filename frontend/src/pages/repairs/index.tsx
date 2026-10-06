@@ -1,23 +1,24 @@
 import { useState, Fragment } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { repairsApi } from '@/api'
-import { Plus, Search, Edit2, Trash2, Eye, Filter } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Eye, Filter, ImageIcon, Wrench } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Card, CardBody, Badge, Button, EmptyState } from '@/components/ui'
+import { useDebouncedValue } from '@/hooks/use-debounce'
 import type { RepairTicket } from '@/types'
 
-const statusColors: Record<string, string> = {
-  received: 'bg-slate-100 text-slate-700',
-  diagnosis: 'bg-info/10 text-info',
-  waiting_customer: 'bg-warning/10 text-warning',
-  approved: 'bg-primary/10 text-primary',
-  repairing: 'bg-warning/10 text-warning',
-  testing: 'bg-info/10 text-info',
-  ready: 'bg-success/10 text-success',
-  delivered: 'bg-success/10 text-success',
-  cancelled: 'bg-danger/10 text-danger',
-}
+const STATUS_TABS = [
+  { value: '', label: 'All', icon: null },
+  { value: 'received', label: 'Received', icon: null },
+  { value: 'diagnosis', label: 'Diagnosis', icon: null },
+  { value: 'waiting_customer', label: 'Waiting', icon: null },
+  { value: 'repairing', label: 'Repairing', icon: null },
+  { value: 'testing', label: 'Testing', icon: null },
+  { value: 'ready', label: 'Ready', icon: null },
+  { value: 'delivered', label: 'Delivered', icon: null },
+  { value: 'cancelled', label: 'Cancelled', icon: null },
+]
 
 export default function RepairsPage() {
   const [page, setPage] = useState(1)
@@ -25,10 +26,11 @@ export default function RepairsPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const queryClient = useQueryClient()
+  const debouncedSearch = useDebouncedValue(search, 300)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['repairs', page, search, statusFilter],
-    queryFn: () => repairsApi.list({ page, search, status: statusFilter, page_size: 20 }),
+    queryKey: ['repairs', page, debouncedSearch, statusFilter],
+    queryFn: () => repairsApi.list({ page, search: debouncedSearch, status: statusFilter, page_size: 20 }),
   })
 
   const deleteMutation = useMutation({
@@ -46,7 +48,7 @@ export default function RepairsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Repairs</h1>
-          <p className="text-sm text-muted">Manage repair tickets</p>
+          <p className="text-sm text-muted">Manage repair tickets and technician workflow</p>
         </div>
         <Link to="/repairs/new">
           <Button icon={<Plus className="h-4 w-4" />}>New Repair</Button>
@@ -89,6 +91,22 @@ export default function RepairsPage() {
         </CardBody>
       </Card>
 
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        {STATUS_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => { setStatusFilter(tab.value); setPage(1) }}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              statusFilter === tab.value
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-surface border border-slate-200 text-muted hover:text-base hover:border-primary/20'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {isLoading ? (
         <Card>
           <CardBody>
@@ -105,64 +123,52 @@ export default function RepairsPage() {
             <Card>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-<thead>
-                      <tr className="border-b border-slate-200 bg-slate-50">
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Ticket</th>
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Device</th>
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Image</th>
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Cost</th>
-                        <th className="text-left px-4 py-3 font-medium text-slate-600">Received</th>
-                        <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50">
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Ticket</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Device</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Cost</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Received</th>
+                      <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data?.results?.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8">
+                          <EmptyState title="No repairs found" description="Try adjusting your search or filters." />
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {data?.results?.length === 0 ? (
-                        <tr>
-                          <td colSpan={8} className="px-4 py-8">
-                            <EmptyState title="No repairs found" description="Try adjusting your search or filters." />
+                    ) : (
+                      data?.results?.map((repair: RepairTicket) => (
+                        <tr key={repair.id} className="hover:bg-slate-50">
+                          <td className="px-4 py-3">
+                            <Link to={`/repairs/${repair.id}`} className="font-medium text-slate-900 hover:text-primary">{repair.ticket_number}</Link>
+                          </td>
+                          <td className="px-4 py-3 text-slate-600">{repair.customer?.first_name} {repair.customer?.last_name}</td>
+                          <td className="px-4 py-3 text-slate-600">{repair.device?.brand} {repair.device?.model}</td>
+                          <td className="px-4 py-3">
+                            <Badge variant={statusVariant(repair.status)}>{repair.status_label || repair.status}</Badge>
+                          </td>
+                          <td className="px-4 py-3 text-slate-600">{repair.final_cost?.toLocaleString() ?? repair.estimated_cost.toLocaleString()} TND</td>
+                          <td className="px-4 py-3 text-slate-600">{new Date(repair.received_at).toLocaleDateString()}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-end gap-1">
+                              <Link to={`/repairs/${repair.id}`} className="p-2 hover:bg-slate-100 rounded-lg"><Eye className="h-4 w-4 text-slate-600" /></Link>
+                              <Link to={`/repairs/${repair.id}/edit`} className="p-2 hover:bg-slate-100 rounded-lg"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
+                              <button onClick={() => setDeleteId(repair.id)} className="p-2 hover:bg-danger/10 rounded-lg"><Trash2 className="h-4 w-4 text-danger" /></button>
+                            </div>
                           </td>
                         </tr>
-                      ) : (
-                        data?.results?.map((repair: RepairTicket) => (
-                          <tr key={repair.id} className="hover:bg-slate-50">
-                            <td className="px-4 py-3">
-                              <Link to={`/repairs/${repair.id}`} className="font-medium text-slate-900 hover:text-primary">{repair.ticket_number}</Link>
-                            </td>
-                            <td className="px-4 py-3 text-slate-600">{repair.customer?.first_name} {repair.customer?.last_name}</td>
-                            <td className="px-4 py-3 text-slate-600">{repair.device?.brand} {repair.device?.model}</td>
-                            <td className="px-4 py-3">
-                              {repair.images && repair.images.length > 0 ? (
-                                <img src={repair.images[0].image} alt={repair.ticket_number} className="h-12 w-12 object-cover rounded" />
-                              ) : (
-                                <div className="h-12 w-12 rounded bg-slate-100 flex items-center justify-center">
-                                  <ImageIcon className="h-5 w-5 text-slate-400" />
-                                </div>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <Badge variant={statusVariant(repair.status)}>{repair.status_label || repair.status}</Badge>
-                            </td>
-                            <td className="px-4 py-3 text-slate-600">{repair.final_cost?.toLocaleString() ?? repair.estimated_cost.toLocaleString()} TND</td>
-                            <td className="px-4 py-3 text-slate-600">{new Date(repair.received_at).toLocaleDateString()}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center justify-end gap-1">
-                                <Link to={`/repairs/${repair.id}`} className="p-2 hover:bg-slate-100 rounded-lg"><Eye className="h-4 w-4 text-slate-600" /></Link>
-                                <Link to={`/repairs/${repair.id}/edit`} className="p-2 hover:bg-slate-100 rounded-lg"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
-                                <button onClick={() => setDeleteId(repair.id)} className="p-2 hover:bg-danger/10 rounded-lg"><Trash2 className="h-4 w-4 text-danger" /></button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
+                      ))
+                    )}
+                  </tbody>
                 </table>
               </div>
             </Card>
           </div>
-        </Fragment>
-      )}
 
           <div className="md:hidden space-y-3">
             {data?.results?.length === 0 ? (
@@ -200,12 +206,6 @@ export default function RepairsPage() {
                         <button onClick={() => setDeleteId(repair.id)} className="p-2 hover:bg-danger/10 rounded-lg"><Trash2 className="h-4 w-4 text-danger" /></button>
                       </div>
                     </div>
-
-                    {repair.images && repair.images.length > 0 && (
-                      <div className="mt-3">
-                        <img src={repair.images[0].image} alt={repair.ticket_number} className="h-24 w-full object-cover rounded" />
-                      </div>
-                    )}
                   </CardBody>
                 </Card>
               ))

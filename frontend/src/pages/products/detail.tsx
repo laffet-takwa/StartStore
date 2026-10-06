@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { productsApi, categoriesApi, suppliersApi } from '@/api'
-import { ArrowLeft, Image, Upload } from 'lucide-react'
+import { ArrowLeft, Image } from 'lucide-react'
 import { toast } from 'sonner'
 
 const productSchema = z.object({

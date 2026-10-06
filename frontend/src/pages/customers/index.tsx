@@ -1,10 +1,11 @@
 import { useState, Fragment } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { customersApi } from '@/api/customers.api'
-import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Eye, Wrench, ShoppingCart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Card, CardBody, Badge, Button, EmptyState } from '@/components/ui'
+import { useDebouncedValue } from '@/hooks/use-debounce'
 import type { Customer } from '@/types'
 
 export default function CustomersPage() {
@@ -12,10 +13,11 @@ export default function CustomersPage() {
   const [search, setSearch] = useState('')
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const queryClient = useQueryClient()
+  const debouncedSearch = useDebouncedValue(search, 300)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['customers', page, search],
-    queryFn: () => customersApi.list({ page, search, page_size: 20 }),
+    queryKey: ['customers', page, debouncedSearch],
+    queryFn: () => customersApi.list({ page, search: debouncedSearch, page_size: 20 }),
   })
 
   const deleteMutation = useMutation({
@@ -76,16 +78,17 @@ export default function CustomersPage() {
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Phone</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Email</th>
-                      <th className="text-left px-4 py-3 font-medium text-slate-600">Company</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Devices</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Repairs</th>
+                      <th className="text-left px-4 py-3 font-medium text-slate-600">Total Spent</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
-                      <th className="text-left px-4 py-3 font-medium text-slate-600">Created</th>
                       <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {data?.results?.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-4 py-8">
+                        <td colSpan={8} className="px-4 py-8">
                           <EmptyState title="No customers found" description="Try adjusting your search or create a new customer." />
                         </td>
                       </tr>
@@ -99,14 +102,13 @@ export default function CustomersPage() {
                           </td>
                           <td className="px-4 py-3 text-slate-600">{customer.phone}</td>
                           <td className="px-4 py-3 text-slate-600">{customer.email || '-'}</td>
-                          <td className="px-4 py-3 text-slate-600">{customer.company_name || '-'}</td>
+                          <td className="px-4 py-3 text-slate-600">{customer.device_count}</td>
+                          <td className="px-4 py-3 text-slate-600">{customer.repair_count}</td>
+                          <td className="px-4 py-3 text-slate-600">{customer.total_spent.toLocaleString()} TND</td>
                           <td className="px-4 py-3">
                             <Badge variant={customer.is_active ? 'success' : 'default'}>
                               {customer.is_active ? 'Active' : 'Inactive'}
                             </Badge>
-                          </td>
-                          <td className="px-4 py-3 text-slate-600">
-                            {new Date(customer.created_at).toLocaleDateString()}
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-end gap-1">
@@ -151,6 +153,11 @@ export default function CustomersPage() {
                     <div className="mt-3 flex items-center justify-between text-xs text-slate-600">
                       <span>{customer.company_name || 'Individual'}</span>
                       <span>{new Date(customer.created_at).toLocaleDateString()}</span>
+                    </div>
+
+                    <div className="mt-2 flex items-center gap-4 text-xs text-muted">
+                      <span className="flex items-center gap-1"><Wrench className="h-3 w-3" /> {customer.repair_count} repairs</span>
+                      <span className="flex items-center gap-1"><ShoppingCart className="h-3 w-3" /> {customer.total_spent.toLocaleString()} TND</span>
                     </div>
 
                     <div className="mt-3 flex items-center justify-end gap-1">

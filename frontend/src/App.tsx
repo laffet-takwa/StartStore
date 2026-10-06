@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/context/auth-context'
 import { ThemeProvider } from '@/context/theme-context'
+import { CartProvider } from '@/context/cart-context'
 import { RouterProvider } from 'react-router-dom'
 import { router } from '@/routes'
 import { Toaster } from 'sonner'
@@ -19,7 +20,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <CartProvider>
+            <RouterProvider router={router} />
+          </CartProvider>
           <Toaster position="bottom-right" richColors />
         </AuthProvider>
       </ThemeProvider>

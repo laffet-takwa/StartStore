@@ -351,6 +351,29 @@ export interface PublicRepairTracking {
   }
 }
 
+export interface Content {
+  id: string
+  title: string
+  description?: string
+  content_type: string
+  content_type_label?: string
+  category_name?: string
+  is_published: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface RoboticsProject {
+  id: string
+  title: string
+  description?: string
+  technology?: string
+  status: string
+  status_label?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null

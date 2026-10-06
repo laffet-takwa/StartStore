@@ -1,8 +1,17 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { publicRepairsApi } from '@/api'
-import { Search, Wrench, CheckCircle, AlertCircle, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
+import { Search, Wrench, AlertCircle, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { toast } from 'sonner'
+import { Card, CardBody, Button } from '@/components/ui'
+
+const deviceIcon: Record<string, React.ReactNode> = {
+  laptop: <Laptop className="h-10 w-10 text-slate-400" />,
+  desktop: <Monitor className="h-10 w-10 text-slate-400" />,
+  phone: <Smartphone className="h-10 w-10 text-slate-400" />,
+  tablet: <Tablet className="h-10 w-10 text-slate-400" />,
+  other: <Monitor className="h-10 w-10 text-slate-400" />,
+}
 
 export default function TrackPage() {
   const [matricule, setMatricule] = useState('')
@@ -33,69 +42,73 @@ export default function TrackPage() {
           <p className="text-muted mt-2">Enter your tracking matricule to check repair status</p>
         </div>
 
-        <form onSubmit={handleSearch} className="bg-surface rounded-lg border border-slate-200 p-6 mb-6">
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
-              <input
-                type="text"
-                value={matricule}
-                onChange={(e) => setMatricule(e.target.value)}
-                placeholder="Enter tracking number..."
-                className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <button type="submit" disabled={isLoading} className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 disabled:opacity-50">
-              {isLoading ? 'Searching...' : 'Track'}
-            </button>
-          </div>
-        </form>
+        <Card>
+          <CardBody>
+            <form onSubmit={handleSearch} className="flex gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
+                <input
+                  type="text"
+                  value={matricule}
+                  onChange={(e) => setMatricule(e.target.value)}
+                  placeholder="Enter tracking number..."
+                  className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Searching...' : 'Track'}
+              </Button>
+            </form>
+          </CardBody>
+        </Card>
 
         {error && (
-          <div className="bg-danger/5 border border-danger/20 rounded-lg p-4 text-center">
-            <AlertCircle className="h-8 w-8 text-danger mx-auto mb-2" />
-            <p className="text-sm text-danger">Repair not found. Please check the tracking number.</p>
-          </div>
+          <Card className="mt-6">
+            <CardBody>
+              <div className="flex items-center gap-3 text-danger">
+                <AlertCircle className="h-5 w-5" />
+                <p className="text-sm">Repair not found. Please check the tracking number.</p>
+              </div>
+            </CardBody>
+          </Card>
         )}
 
         {tracking && (
-          <div className="bg-surface rounded-lg border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-900">Repair Status</h2>
-              <span className="text-sm text-muted">{(tracking as any).matricule}</span>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="relative h-20 w-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
-                  {(tracking as any).device.type === 'laptop' && <Laptop className="h-10 w-10 text-slate-400" />}
-                  {(tracking as any).device.type === 'desktop' && <Monitor className="h-10 w-10 text-slate-400" />}
-                  {(tracking as any).device.type === 'phone' && <Smartphone className="h-10 w-10 text-slate-400" />}
-                  {(tracking as any).device.type === 'tablet' && <Tablet className="h-10 w-10 text-slate-400" />}
-                  {(tracking as any).device.type === 'other' && <Monitor className="h-10 w-10 text-slate-400" />}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{(tracking as any).repair.status_label}</p>
-                  <p className="text-xs text-muted">Last updated: {new Date((tracking as any).repair.last_updated).toLocaleString()}</p>
-                </div>
+          <Card className="mt-6">
+            <CardBody>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-slate-900">Repair Status</h2>
+                <span className="text-sm text-muted">{(tracking as any).matricule}</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-50 rounded-md">
-                  <p className="text-xs text-muted">Device</p>
-                  <p className="text-sm font-medium text-slate-900">{(tracking as any).device.brand} {(tracking as any).device.model}</p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-20 w-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+                    {deviceIcon[(tracking as any).device.type] || deviceIcon.other}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">{(tracking as any).repair.status_label}</p>
+                    <p className="text-xs text-muted">Last updated: {new Date((tracking as any).repair.last_updated).toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-md">
-                  <p className="text-xs text-muted">Received</p>
-                  <p className="text-sm font-medium text-slate-900">{new Date((tracking as any).repair.received_at).toLocaleDateString()}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-slate-50 rounded-md">
+                    <p className="text-xs text-muted">Device</p>
+                    <p className="text-sm font-medium text-slate-900">{(tracking as any).device.brand} {(tracking as any).device.model}</p>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-md">
+                    <p className="text-xs text-muted">Received</p>
+                    <p className="text-sm font-medium text-slate-900">{new Date((tracking as any).repair.received_at).toLocaleDateString()}</p>
+                  </div>
                 </div>
+                {(tracking as any).repair.estimated_completion_date && (
+                  <div className="p-3 bg-info/5 rounded-md">
+                    <p className="text-xs text-muted">Estimated Completion</p>
+                    <p className="text-sm font-medium text-slate-900">{new Date((tracking as any).repair.estimated_completion_date).toLocaleDateString()}</p>
+                  </div>
+                )}
               </div>
-              {(tracking as any).repair.estimated_completion_date && (
-                <div className="p-3 bg-info/5 rounded-md">
-                  <p className="text-xs text-muted">Estimated Completion</p>
-                  <p className="text-sm font-medium text-slate-900">{new Date((tracking as any).repair.estimated_completion_date).toLocaleDateString()}</p>
-                </div>
-              )}
-            </div>
-          </div>
+            </CardBody>
+          </Card>
         )}
       </div>
     </div>

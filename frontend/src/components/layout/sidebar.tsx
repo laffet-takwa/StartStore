@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
 import type { Role } from '@/types'
+import { cn } from '@/utils/cn'
 
 const allNavItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'sales'] },
@@ -45,11 +46,14 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
 
   return (
     <aside
-      className={`${collapsed ? 'w-16' : 'w-64'} bg-secondary text-white flex flex-col transition-all duration-200 ease-in-out`}
+      className={cn(
+        'flex flex-col transition-all duration-200 ease-in-out border-r border-base',
+        collapsed ? 'w-16' : 'w-64'
+      )}
     >
-      <div className="h-14 flex items-center justify-center border-b border-white/10">
-        {!collapsed && <span className="text-lg font-bold tracking-wide">STAR STORE</span>}
-        {collapsed && <span className="text-lg font-bold">SS</span>}
+      <div className="h-14 flex items-center justify-center border-b border-base">
+        {!collapsed && <span className="text-lg font-bold tracking-wide text-base">STAR STORE</span>}
+        {collapsed && <span className="text-lg font-bold text-primary">SS</span>}
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
@@ -59,9 +63,13 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
             to={item.to}
             onClick={onClose}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all animate-slide-in-right ${
-                isActive ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-300 hover:bg-white/10 hover:text-white'
-              }`
+              cn(
+                'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all',
+                isActive
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  : 'text-muted-base hover:bg-surface-secondary hover:text-base dark:hover:bg-dark-surface-secondary',
+                'animate-slide-in-right'
+              )
             }
             style={{ animationDelay: `${idx * 30}ms`, animationFillMode: 'both' }}
           >
@@ -72,8 +80,8 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       </nav>
 
       {!collapsed && (
-        <div className="p-3 border-t border-white/10">
-          <p className="text-[11px] text-slate-400 text-center">STAR STORE MANAGER v1.0</p>
+        <div className="p-3 border-t border-base">
+          <p className="text-[11px] text-muted-base text-center">STAR STORE MANAGER v1.0</p>
         </div>
       )}
     </aside>

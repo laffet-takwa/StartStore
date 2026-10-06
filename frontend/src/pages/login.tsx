@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { useAuth } from '@/context/auth-context'
 import { toast } from 'sonner'
 import { Store } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import loginBg from '/images/dell.jpg'
 
 const loginSchema = z.object({
@@ -17,6 +18,7 @@ type LoginForm = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -27,6 +29,7 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password)
       toast.success('Welcome back!')
+      navigate('/dashboard', { replace: true })
     } catch {
       toast.error('Invalid email or password')
     } finally {
@@ -93,6 +96,13 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-6 text-center text-xs text-muted">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </p>
+
+          <p className="mt-4 text-center text-xs text-muted">
             STAR STORE MANAGER v1.0
           </p>
         </div>

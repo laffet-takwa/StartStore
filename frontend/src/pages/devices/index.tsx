@@ -4,7 +4,16 @@ import { devicesApi } from '@/api/devices.api'
 import { Plus, Search, Edit2, Trash2, Eye, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Card, CardBody, Badge, Button, EmptyState } from '@/components/ui'
 import type { Device } from '@/types'
+
+const deviceIcon: Record<string, React.ReactNode> = {
+  laptop: <Laptop className="h-6 w-6 text-slate-400" />,
+  desktop: <Monitor className="h-6 w-6 text-slate-400" />,
+  phone: <Smartphone className="h-6 w-6 text-slate-400" />,
+  tablet: <Tablet className="h-6 w-6 text-slate-400" />,
+  other: <Monitor className="h-6 w-6 text-slate-400" />,
+}
 
 export default function DevicesPage() {
   const [page, setPage] = useState(1)
@@ -28,19 +37,19 @@ export default function DevicesPage() {
   })
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 page-enter">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Devices</h1>
           <p className="text-sm text-muted">Customer devices</p>
         </div>
-        <Link to="/devices/new" className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90">
-          <Plus className="h-4 w-4" /> Add Device
+        <Link to="/devices/new">
+          <Button icon={<Plus className="h-4 w-4" />}>Add Device</Button>
         </Link>
       </div>
 
-      <div className="bg-surface rounded-lg border border-slate-200">
-        <div className="p-4 border-b border-slate-200">
+      <Card>
+        <CardBody className="p-4">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
             <input
@@ -48,25 +57,32 @@ export default function DevicesPage() {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1) }}
               placeholder="Search devices..."
-              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
-        </div>
+        </CardBody>
+      </Card>
 
-        {isLoading ? (
-          <div className="p-8 flex justify-center">
-            <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-<thead>
+      {isLoading ? (
+        <Card>
+          <CardBody>
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-12 rounded-md bg-slate-100 animate-pulse" />
+              ))}
+            </div>
+          </CardBody>
+        </Card>
+      ) : (
+        <>
+          <div className="hidden md:block">
+            <Card>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
                     <tr className="border-b border-slate-200 bg-slate-50">
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Device</th>
-                      <th className="text-left px-4 py-3 font-medium text-slate-600">Image</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
-                      <th className="text-left px-4 py-3 font-medium text-slate-600">Type</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Brand</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Model</th>
                       <th className="text-left px-4 py-3 font-medium text-slate-600">Repairs</th>
@@ -77,7 +93,9 @@ export default function DevicesPage() {
                   <tbody className="divide-y divide-slate-100">
                     {data?.results?.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="px-4 py-8 text-center text-muted">No devices found.</td>
+                        <td colSpan={7} className="px-4 py-8">
+                          <EmptyState title="No devices found" description="Try adjusting your search." />
+                        </td>
                       </tr>
                     ) : (
                       data?.results?.map((device: Device) => (
@@ -87,49 +105,80 @@ export default function DevicesPage() {
                               {device.device_type_display}
                             </Link>
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="h-12 w-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
-                              {device.device_type === 'laptop' && <Laptop className="h-6 w-6 text-slate-400" />}
-                              {device.device_type === 'desktop' && <Monitor className="h-6 w-6 text-slate-400" />}
-                              {device.device_type === 'phone' && <Smartphone className="h-6 w-6 text-slate-400" />}
-                              {device.device_type === 'tablet' && <Tablet className="h-6 w-6 text-slate-400" />}
-                              {device.device_type === 'other' && <Monitor className="h-6 w-6 text-slate-400" />}
-                            </div>
-                          </td>
                           <td className="px-4 py-3 text-slate-600">{device.customer_name}</td>
-                          <td className="px-4 py-3 text-slate-600">{device.device_type_display}</td>
                           <td className="px-4 py-3 text-slate-600">{device.brand}</td>
                           <td className="px-4 py-3 text-slate-600">{device.model}</td>
                           <td className="px-4 py-3 text-slate-600">{device.repair_count}</td>
                           <td className="px-4 py-3 text-slate-600">{new Date(device.created_at).toLocaleDateString()}</td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-end gap-1">
-                              <Link to={`/devices/${device.id}`} className="p-1.5 hover:bg-slate-100 rounded"><Eye className="h-4 w-4 text-slate-600" /></Link>
-                              <Link to={`/devices/${device.id}/edit`} className="p-1.5 hover:bg-slate-100 rounded"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
-                              <button onClick={() => setDeleteId(device.id)} className="p-1.5 hover:bg-danger/10 rounded"><Trash2 className="h-4 w-4 text-danger" /></button>
+                              <Link to={`/devices/${device.id}`} className="p-2 hover:bg-slate-100 rounded-lg"><Eye className="h-4 w-4 text-slate-600" /></Link>
+                              <Link to={`/devices/${device.id}/edit`} className="p-2 hover:bg-slate-100 rounded-lg"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
+                              <button onClick={() => setDeleteId(device.id)} className="p-2 hover:bg-danger/10 rounded-lg"><Trash2 className="h-4 w-4 text-danger" /></button>
                             </div>
                           </td>
                         </tr>
                       ))
                     )}
                   </tbody>
-              </table>
-            </div>
-
-            {data && data.count > 20 && (
-              <div className="p-4 border-t border-slate-200 flex items-center justify-between">
-                <p className="text-sm text-muted">
-                  Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, data.count)} of {data.count}
-                </p>
-                <div className="flex gap-2">
-                  <button disabled={!data.previous} onClick={() => setPage((p) => p - 1)} className="px-3 py-1.5 text-sm border border-slate-200 rounded-md disabled:opacity-50">Previous</button>
-                  <button disabled={!data.next} onClick={() => setPage((p) => p + 1)} className="px-3 py-1.5 text-sm border border-slate-200 rounded-md disabled:opacity-50">Next</button>
-                </div>
+                </table>
               </div>
+            </Card>
+          </div>
+
+          <div className="md:hidden space-y-3">
+            {data?.results?.length === 0 ? (
+              <Card>
+                <CardBody>
+                  <EmptyState title="No devices found" description="Try adjusting your search." />
+                </CardBody>
+              </Card>
+            ) : (
+              data?.results?.map((device: Device) => (
+                <Card key={device.id} hover className="animate-slide-up">
+                  <CardBody className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center">
+                          {deviceIcon[device.device_type] || deviceIcon.other}
+                        </div>
+                        <div className="min-w-0">
+                          <Link to={`/devices/${device.id}`} className="text-sm font-semibold text-slate-900 hover:text-primary truncate block">
+                            {device.device_type_display}
+                          </Link>
+                          <p className="text-xs text-muted">{device.customer_name}</p>
+                        </div>
+                      </div>
+                      <Badge variant="info">{device.repair_count} repairs</Badge>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between text-xs text-slate-600">
+                      <span>{device.brand} {device.model}</span>
+                      <span>{new Date(device.created_at).toLocaleDateString()}</span>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-end gap-1">
+                      <Link to={`/devices/${device.id}`} className="p-2 hover:bg-slate-100 rounded-lg"><Eye className="h-4 w-4 text-slate-600" /></Link>
+                      <Link to={`/devices/${device.id}/edit`} className="p-2 hover:bg-slate-100 rounded-lg"><Edit2 className="h-4 w-4 text-slate-600" /></Link>
+                      <button onClick={() => setDeleteId(device.id)} className="p-2 hover:bg-danger/10 rounded-lg"><Trash2 className="h-4 w-4 text-danger" /></button>
+                    </div>
+                  </CardBody>
+                </Card>
+              ))
             )}
-          </>
-        )}
-      </div>
+          </div>
+
+          {data && data.count > 20 && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted">Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, data.count)} of {data.count}</p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" disabled={!data.previous} onClick={() => setPage((p) => p - 1)}>Previous</Button>
+                <Button variant="outline" size="sm" disabled={!data.next} onClick={() => setPage((p) => p + 1)}>Next</Button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {deleteId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -137,10 +186,10 @@ export default function DevicesPage() {
             <h3 className="text-lg font-semibold text-slate-900 mb-2">Delete Device</h3>
             <p className="text-sm text-muted mb-4">Are you sure? This action cannot be undone.</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50">Cancel</button>
-              <button onClick={() => deleteMutation.mutate(deleteId)} disabled={deleteMutation.isPending} className="px-4 py-2 text-sm bg-danger text-white rounded-md hover:bg-danger/90 disabled:opacity-50">
+              <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
+              <Button variant="danger" onClick={() => deleteMutation.mutate(deleteId)} disabled={deleteMutation.isPending}>
                 {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
