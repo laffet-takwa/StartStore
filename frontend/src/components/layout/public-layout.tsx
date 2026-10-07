@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { PublicNavbar } from './public-navbar'
+import { Navbar as PublicNavbar } from './public-navbar'
 import { PublicFooter } from './public-footer'
 
 export function PublicLayout() {

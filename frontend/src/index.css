@@ -1,29 +1,63 @@
 @import "tailwindcss";
 
 @theme {
+  /* ============================================
+     CORE COLORS
+     ============================================ */
   --color-primary: #2563EB;
   --color-primary-hover: #1D4ED8;
   --color-primary-light: #EFF6FF;
   --color-primary-subtle: #DBEAFE;
+  --color-primary-50: #EFF6FF;
+  --color-primary-100: #DBEAFE;
+  --color-primary-200: #BFDBFE;
+  --color-primary-300: #93C5FD;
+  --color-primary-400: #60A5FA;
+  --color-primary-500: #3B82F6;
+  --color-primary-600: #2563EB;
+  --color-primary-700: #1D4ED8;
+  --color-primary-800: #1E40AF;
+  --color-primary-900: #1E3A8A;
+
   --color-secondary: #0F172A;
   --color-background: #F8FAFC;
   --color-surface: #FFFFFF;
   --color-surface-secondary: #F1F5F9;
   --color-surface-tertiary: #E2E8F0;
   --color-muted: #64748B;
+
   --color-success: #16A34A;
   --color-success-light: #F0FDF4;
+  --color-success-500: #22C55E;
+  --color-success-600: #16A34A;
+
   --color-warning: #F59E0B;
   --color-warning-light: #FFFBEB;
+  --color-warning-500: #F59E0B;
+  --color-warning-600: #D97706;
+
   --color-danger: #DC2626;
   --color-danger-light: #FEF2F2;
+  --color-danger-500: #EF4444;
+  --color-danger-600: #DC2626;
+
   --color-info: #0284C7;
   --color-info-light: #F0F9FF;
+  --color-info-500: #0EA5E9;
+  --color-info-600: #0284C7;
 
+  --color-purple: #8B5CF6;
+  --color-purple-light: #EDE9FE;
+  --color-purple-500: #8B5CF6;
+  --color-purple-600: #7C3AED;
+
+  /* ============================================
+     DARK COLORS
+     ============================================ */
   --color-dark-background: #0B1120;
   --color-dark-surface: #111827;
-  --color-dark-surface-secondary: #1E293B;
-  --color-dark-surface-tertiary: #334155;
+  --color-dark-surface-secondary: #172033;
+  --color-dark-surface-tertiary: #1E293B;
   --color-dark-primary: #3B82F6;
   --color-dark-primary-hover: #60A5FA;
   --color-dark-primary-light: #1E3A5F;
@@ -40,24 +74,106 @@
   --color-dark-danger-light: #7F1D1D;
   --color-dark-info: #38BDF8;
   --color-dark-info-light: #0C4A6E;
+  --color-dark-purple: #A78BFA;
+  --color-dark-purple-light: #4C1D95;
 
-  --radius-lg: 0.75rem;
-  --radius-md: 0.5rem;
+  /* ============================================
+     TEXT COLORS
+     ============================================ */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748B;
+  --color-text-subtle: #94A3B8;
+  --color-text-disabled: #CBD5E1;
+  --color-border: #E2E8F0;
+
+  /* ============================================
+     TYPOGRAPHY SCALE
+     ============================================ */
+  --text-display: 3rem;
+  --text-display--line-height: 3.5rem;
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 2.75rem;
+  --text-h2: 1.875rem;
+  --text-h2--line-height: 2.375rem;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.875rem;
+  --text-h4: 1.25rem;
+  --text-h4--line-height: 1.75rem;
+  --text-h5: 1.125rem;
+  --text-h5--line-height: 1.625rem;
+  --text-body-large: 1rem;
+  --text-body-large--line-height: 1.5rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.25rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.125rem;
+
+  /* ============================================
+     SPACING SCALE
+     ============================================ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* ============================================
+     SHADOWS
+     ============================================ */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.03);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+
+  /* ============================================
+     BORDERS
+     ============================================ */
+  --radius-xs: 0.25rem;
   --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* ============================================
+     TRANSITIONS
+     ============================================ */
+  --transition-fast: 120ms ease;
+  --transition-base: 180ms ease;
+  --transition-slow: 250ms ease;
 
-  --animate-fade-in: fade-in 0.4s ease-out;
-  --animate-slide-up: slide-up 0.45s ease-out;
-  --animate-slide-in-right: slide-in-right 0.35s ease-out;
-  --animate-scale-in: scale-in 0.3s ease-out;
-  --animate-float: float 3s ease-in-out infinite;
-  --animate-pulse-soft: pulse-soft 2.5s ease-in-out infinite;
-  --animate-shimmer: shimmer 1.8s linear infinite;
-  --animate-slide-down: slide-down 0.3s ease-out;
+  /* ============================================
+     Z-INDEX
+     ============================================ */
+  --z-dropdown: 50;
+  --z-sticky: 40;
+  --z-fixed: 30;
+  --z-modal-backdrop: 60;
+  --z-modal: 70;
+  --z-toast: 80;
+
+  /* ============================================
+     LAYOUT
+     ============================================ */
+  --sidebar-width: 16rem;
+  --sidebar-collapsed-width: 4.5rem;
+  --header-height: 3.5rem;
+  --mobile-bottom-nav-height: 4rem;
+  --container-max: 80rem;
 }
 
 @keyframes fade-in {

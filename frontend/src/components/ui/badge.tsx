@@ -7,7 +7,7 @@ export function Badge({
   className = '',
 }: {
   children: React.ReactNode
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'outline' | 'secondary'
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'outline' | 'secondary' | 'primary'
   size?: 'xs' | 'sm' | 'md'
   className?: string
 }) {
@@ -19,6 +19,7 @@ export function Badge({
     danger: 'bg-danger-light text-danger dark:bg-dark-danger-light dark:text-dark-danger',
     info: 'bg-info-light text-info dark:bg-dark-info-light dark:text-dark-info',
     outline: 'border border-slate-300 text-slate-700 bg-transparent dark:border-slate-600 dark:text-dark-text-secondary',
+    primary: 'bg-primary-light text-primary dark:bg-dark-primary-light dark:text-dark-primary',
   }
 
   const sizes: Record<string, string> = {

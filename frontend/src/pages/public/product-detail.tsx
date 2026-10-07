@@ -1,13 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
 import { productsApi } from '@/api'
 import { Link, useParams } from 'react-router-dom'
-import { ShoppingCart, Heart, ArrowLeft, Package } from 'lucide-react'
-import { Card, CardBody, Button, Badge } from '@/components/ui'
+import { ShoppingCart, Heart, ArrowLeft } from 'lucide-react'
+import { Button, Badge } from '@/components/ui'
+import { AppImage } from '@/components/ui'
+import { useCart } from '@/context/cart-context'
+import { useI18n } from '@/i18n/context'
+import { toast } from 'sonner'
+import { resolveProductImage } from '@/utils/images'
 import type { Product } from '@/types'
 
 export default function PublicProductDetailPage() {
   const { id } = useParams<{ id: string }>()
   const productId = id || ''
+  const { addItem } = useCart()
+  const { t } = useI18n()
 
   const { data, isLoading } = useQuery({
     queryKey: ['public-product', productId],
@@ -37,64 +44,79 @@ export default function PublicProductDetailPage() {
   if (!product) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <p className="text-muted">Product not found.</p>
+        <p className="text-slate-500 dark:text-slate-400">Product not found.</p>
         <Link to="/shop" className="text-primary hover:underline">Back to shop</Link>
       </div>
     )
   }
 
+  const handleAddToCart = () => {
+    if (product.stock_quantity > 0) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        selling_price: product.selling_price,
+        stock_quantity: product.stock_quantity,
+        image: product.image,
+      })
+      toast.success('Added to cart')
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 page-enter">
-      <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-muted hover:text-base mb-6">
+      <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-base mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to shop
+        {t('shop.backToShop')}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="aspect-square rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden">
-          {product.image ? (
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          ) : (
-            <Package className="h-24 w-24 text-slate-300" />
-          )}
+        <div className="aspect-square rounded-xl bg-slate-100 overflow-hidden">
+          <AppImage
+            src={resolveProductImage(product)}
+            alt={product.name}
+            objectFit="contain"
+            priority
+            className="p-6"
+          />
         </div>
 
         <div>
           <h1 className="text-3xl font-bold text-slate-900">{product.name}</h1>
-          <p className="text-sm text-muted mt-1">{product.category_name || 'General'}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{product.category_name || t('shop.category')}</p>
 
           <div className="mt-4 flex items-baseline gap-3">
             <span className="text-3xl font-bold text-primary">{product.selling_price.toLocaleString()} TND</span>
             <Badge variant={product.stock_quantity > 0 ? 'success' : 'danger'}>
-              {product.stock_quantity > 0 ? `${product.stock_quantity} in stock` : 'Out of stock'}
+              {product.stock_quantity > 0 ? `${product.stock_quantity} ${t('shop.inStock')}` : t('shop.outOfStock')}
             </Badge>
           </div>
 
-          <p className="mt-4 text-sm text-muted">{product.description || 'No description available.'}</p>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{product.description || t('shop.noDescription')}</p>
 
           <div className="mt-6 flex items-center gap-4">
-            <Button size="lg" icon={<ShoppingCart className="h-4 w-4" />} disabled={product.stock_quantity === 0}>
-              Add to cart
+            <Button size="lg" icon={<ShoppingCart className="h-4 w-4" />} disabled={product.stock_quantity === 0} onClick={handleAddToCart}>
+              {t('shop.addToCart')}
             </Button>
             <Button variant="outline" size="lg" icon={<Heart className="h-4 w-4" />}>
-              Wishlist
+              {t('shop.wishlist')}
             </Button>
           </div>
 
-          <div className="mt-8 border-t border-base pt-6 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted">SKU</span>
-              <span className="text-slate-900">{product.sku}</span>
+            <div className="mt-8 border-t border-base pt-6 space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">{t('products.sku')}</span>
+                <span className="text-slate-900">{product.sku}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">{t('shop.category')}</span>
+                <span className="text-slate-900">{product.category_name || '-'}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">{t('products.brand') || 'Brand'}</span>
+                <span className="text-slate-900">{product.brand || '-'}</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted">Category</span>
-              <span className="text-slate-900">{product.category_name || '-'}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted">Brand</span>
-              <span className="text-slate-900">{product.brand || '-'}</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

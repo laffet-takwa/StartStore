@@ -1,27 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Menu, Search, Bell, ChevronDown, LogOut, User, Sun, Moon, Monitor } from 'lucide-react'
+import { Menu, Search, ChevronDown, LogOut, User, Sun, Moon, Monitor } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
-import { notificationsApi } from '@/api/dashboard.api'
 import { useTheme } from '@/context/theme-context'
-import type { Notification } from '@/types'
+import { useI18n } from '@/i18n/context'
 import { Link } from 'react-router-dom'
 import { CommandPalette } from '@/components/common/command-palette'
+import { NotificationCenter } from '@/components/common/notification-center'
 import { cn } from '@/utils/cn'
 
 export function TopNavbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const { user, logout } = useAuth()
   const { resolved, setTheme, theme } = useTheme()
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [showDropdown, setShowDropdown] = useState(false)
+  const { t } = useI18n()
   const [themeOpen, setThemeOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-
-  useEffect(() => {
-    notificationsApi
-      .list({ page_size: 5 })
-      .then((res) => setNotifications(res.results))
-      .catch(() => {})
-  }, [])
+  const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -34,124 +27,125 @@ export function TopNavbar({ onToggleSidebar }: { onToggleSidebar: () => void }) 
     return () => document.removeEventListener('keydown', handler)
   }, [])
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length
-
   const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
 
   return (
     <>
-      <header className={cn('h-14 bg-surface border-b border-base flex items-center justify-between px-4 animate-slide-up')}>
+      <header className={cn('h-14 bg-white/80 dark:bg-dark-surface/80 backdrop-blur-sm border-b border-slate-200 dark:border-dark-border flex items-center justify-between px-4 z-40')}>
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleSidebar}
-            className={cn('p-2 rounded-md lg:hidden transition-colors', 'hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
+            className={cn('p-2 rounded-lg transition-colors lg:hidden', 'hover:bg-slate-100 dark:hover:bg-dark-surface-secondary')}
+            aria-label="Toggle sidebar"
           >
-            <Menu className="h-5 w-5 text-muted-base" />
+            <Menu className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
-          <div className="hidden md:flex items-center gap-2 text-sm text-muted-base">
-            <span>STAR STORE</span>
+          <div className="hidden md:flex items-center gap-2">
+            <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">STAR STORE</span>
+            <span className="text-slate-300 dark:text-slate-600">/</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">{t('dashboard.title')}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className={cn('md:hidden p-2 rounded-md transition-colors', 'hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
-            aria-label="Search"
-          >
-            <Search className="h-5 w-5 text-muted-base" />
-          </button>
-
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setSearchOpen(true)}
             className={cn(
-              'hidden md:flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors w-64',
-              'border-base hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary'
+              'hidden md:flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all border border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/40 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary min-w-[200px]'
             )}
           >
-            <Search className="h-4 w-4 text-muted-base" />
-            <span className="text-muted-base">Search...</span>
-            <kbd className={cn('ml-auto rounded border px-1.5 py-0.5 text-[10px] text-muted', 'border-base')}>
+            <Search className="h-4 w-4 text-slate-400" />
+            <span className="text-slate-400 flex-1 text-left">{t('common.search')}</span>
+            <kbd className={cn('rounded border px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border-slate-200 dark:border-slate-700')}>
               ⌘K
             </kbd>
           </button>
 
+          <button
+            onClick={() => setSearchOpen(true)}
+            className={cn('md:hidden p-2 rounded-lg transition-colors', 'hover:bg-slate-100 dark:hover:bg-dark-surface-secondary')}
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+          </button>
+
+          {/* Theme Toggle */}
           <div className="relative">
             <button
               onClick={() => setThemeOpen((v) => !v)}
-              className={cn('p-2 rounded-md transition-colors', 'hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
+              className={cn('p-2 rounded-lg transition-colors', 'hover:bg-slate-100 dark:hover:bg-dark-surface-secondary')}
               aria-label="Toggle theme"
             >
-              <ThemeIcon className="h-4 w-4 text-muted-base" />
+              <ThemeIcon className="h-[18px] w-[18px] text-slate-500 dark:text-slate-400" />
             </button>
             {themeOpen && (
-              <div className={cn(
-                'absolute right-0 mt-2 w-36 rounded-md shadow-lg py-1 z-50 animate-scale-in',
-                'bg-surface border border-base dark:bg-dark-surface dark:border-dark-border'
-              )}>
-                {(['light', 'dark', 'system'] as const).map((t) => (
+              <div
+                className={cn(
+                  'absolute right-0 mt-1.5 w-40 rounded-xl shadow-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-surface z-50 animate-scale-in py-1'
+                )}
+              >
+                {(['light', 'dark', 'system'] as const).map((themeKey) => (
                   <button
-                    key={t}
-                    onClick={() => { setTheme(t); setThemeOpen(false) }}
+                    key={themeKey}
+                    onClick={() => { setTheme(themeKey); setThemeOpen(false) }}
                     className={cn(
-                      'w-full text-left px-3 py-2 text-sm',
-                      theme === t ? 'text-primary font-medium' : 'text-muted-base hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary'
+                      'w-full text-left px-3 py-2.5 text-sm transition-colors flex items-center justify-between',
+                      theme === themeKey ? 'text-primary font-medium bg-primary-50 dark:bg-dark-primary-light' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary'
                     )}
                   >
-                    {t === 'light' ? 'Light' : t === 'dark' ? 'Dark' : 'System'} {resolved === t ? `(${t})` : ''}
+                    <span>{themeKey === 'light' ? t('settings.light') : themeKey === 'dark' ? t('settings.dark') : t('settings.system')}</span>
+                    {resolved === themeKey && <span className="text-xs text-primary">({themeKey})</span>}
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          <Link
-            to="/notifications"
-            className={cn('relative p-2 rounded-md transition-colors', 'hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
-          >
-            <Bell className="h-5 w-5 text-muted-base" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-danger text-white text-[10px] font-bold flex items-center justify-center animate-pulse-soft">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </Link>
+          {/* Notifications */}
+          <NotificationCenter />
 
+          {/* Profile */}
           <div className="relative">
             <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className={cn('flex items-center gap-2 p-1.5 rounded-md transition-colors', 'hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
+              onClick={() => setProfileOpen((v) => !v)}
+              className={cn('flex items-center gap-2 p-1.5 rounded-lg transition-colors', 'hover:bg-slate-100 dark:hover:bg-dark-surface-secondary')}
             >
-              <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-white flex items-center justify-center text-sm font-semibold shadow-sm">
                 {user?.first_name?.[0]}{user?.last_name?.[0]}
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium text-base">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-50 leading-tight">
                   {user?.first_name} {user?.last_name}
                 </p>
-                <p className="text-xs text-muted-base capitalize">{user?.role_display}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 capitalize leading-tight">{user?.role_display}</p>
               </div>
-              <ChevronDown className="h-4 w-4 text-muted hidden md:block" />
+              <ChevronDown className="h-4 w-4 text-slate-400 hidden md:block" />
             </button>
 
-            {showDropdown && (
-              <div className={cn(
-                'absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-50 animate-scale-in',
-                'bg-surface border border-base dark:bg-dark-surface dark:border-dark-border'
-              )}>
-                <Link
-                  to="/profile"
-                  className={cn('flex items-center gap-2 px-4 py-2 text-sm transition-colors', 'text-muted-base hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
+            {profileOpen && (
+              <div
+                className={cn(
+                  'absolute right-0 mt-1.5 w-52 rounded-xl shadow-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-surface z-50 animate-scale-in py-1 overflow-hidden'
+                )}
+              >
+                <div className="px-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-50">{user?.first_name} {user?.last_name}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">{user?.email}</p>
+                </div>
+                 <Link
+                  to="/settings"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary transition-colors"
                 >
-                  <User className="h-4 w-4" />
-                  Profile
+                  <User className="h-4 w-4 text-slate-400" />
+                  {t('navigation.profile')}
                 </Link>
                 <button
-                  onClick={logout}
-                  className={cn('w-full flex items-center gap-2 px-4 py-2 text-sm transition-colors', 'text-danger hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
+                  onClick={() => { logout(); setProfileOpen(false) }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-danger hover:bg-danger-50 dark:hover:bg-dark-danger-light transition-colors"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {t('auth.logout')}
                 </button>
               </div>
             )}

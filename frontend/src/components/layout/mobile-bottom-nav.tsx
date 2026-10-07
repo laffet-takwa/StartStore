@@ -1,33 +1,36 @@
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, Wrench, Users, ShoppingCart, MoreHorizontal } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
+import { useI18n } from '@/i18n/context'
 import type { Role } from '@/types'
 import { useState } from 'react'
-import { Drawer } from '@/components/common/drawer'
+import { motion } from 'framer-motion'
+import { BottomSheet } from '@/components/common/bottom-sheet'
 import { cn } from '@/utils/cn'
 
 const mobileNavItems = [
-  { to: '/dashboard', label: 'Home', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'sales'] },
-  { to: '/repairs', label: 'Repairs', icon: Wrench, roles: ['admin', 'manager', 'technician'] },
-  { to: '/customers', label: 'Customers', icon: Users, roles: ['admin', 'manager', 'sales', 'technician'] },
-  { to: '/sales', label: 'Sales', icon: ShoppingCart, roles: ['admin', 'manager', 'sales'] },
-  { to: '#more', label: 'More', icon: MoreHorizontal, roles: ['admin', 'manager', 'sales', 'technician'] },
+  { to: '/dashboard', labelKey: 'dashboard.title', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'sales'] },
+  { to: '/repairs', labelKey: 'repairs.title', icon: Wrench, roles: ['admin', 'manager', 'technician'] },
+  { to: '/customers', labelKey: 'customers.title', icon: Users, roles: ['admin', 'manager', 'sales', 'technician'] },
+  { to: '/sales', labelKey: 'sales.title', icon: ShoppingCart, roles: ['admin', 'manager', 'sales'] },
+  { to: '#more', labelKey: 'common.actions', icon: MoreHorizontal, roles: ['admin', 'manager', 'sales', 'technician'] },
 ]
 
 const moreItems = [
-  { to: '/devices', label: 'Devices' },
-  { to: '/products', label: 'Products' },
-  { to: '/inventory', label: 'Inventory' },
-  { to: '/invoices', label: 'Invoices' },
-  { to: '/payments', label: 'Payments' },
-  { to: '/employees', label: 'Employees', roles: ['admin'] },
-  { to: '/reports', label: 'Reports' },
-  { to: '/notifications', label: 'Notifications' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/devices', labelKey: 'devices.title' },
+  { to: '/products', labelKey: 'products.title' },
+  { to: '/inventory', labelKey: 'inventory.title' },
+  { to: '/invoices', labelKey: 'invoices.title' },
+  { to: '/payments', labelKey: 'payments.title' },
+  { to: '/employees', labelKey: 'employees.title', roles: ['admin'] },
+  { to: '/reports', labelKey: 'reports.title' },
+  { to: '/notifications', labelKey: 'notifications.title' },
+  { to: '/settings', labelKey: 'settings.title' },
 ]
 
 export function MobileBottomNav() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const role = (user?.role || 'sales') as Role
   const [moreOpen, setMoreOpen] = useState(false)
 
@@ -36,19 +39,27 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <nav className={cn('lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-surface/90 backdrop-blur', 'border-base')}>
-        <div className="flex items-center justify-between px-2 pb-safe">
+      <nav
+        className={cn(
+          'lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-white/90 dark:bg-dark-surface/90 backdrop-blur-md',
+          'border-slate-200 dark:border-dark-border safe-area-pb'
+        )}
+      >
+        <div className="flex items-center justify-around px-2 h-[60px]">
           {visible.map((item) => {
             if (item.to === '#more') {
               return (
                 <button
                   key={item.to}
                   onClick={() => setMoreOpen(true)}
-                  className={cn('flex flex-col items-center gap-0.5 px-3 py-2 text-xs transition-colors', 'text-muted-base hover:text-base')}
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </button>
+                  className={cn(
+                    'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 text-[11px] font-medium transition-all rounded-xl min-w-[64px]',
+                    'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                  )}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span>{t(item.labelKey)}</span>
+                  </button>
               )
             }
             return (
@@ -57,33 +68,49 @@ export function MobileBottomNav() {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    'flex flex-col items-center gap-0.5 px-3 py-2 text-xs transition-colors',
-                    isActive ? 'text-primary' : 'text-muted-base hover:text-base'
+                    'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 text-[11px] font-medium transition-all rounded-xl min-w-[64px] relative',
+                    isActive
+                      ? 'text-primary'
+                      : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                   )
                 }
               >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.div
+                        layoutId="mobile-nav-indicator"
+                        className="absolute -top-1.5 h-1 w-6 rounded-full bg-primary"
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                    <item.icon className="h-5 w-5" />
+                     <span>{t(item.labelKey)}</span>
+                  </>
+                )}
               </NavLink>
             )
           })}
         </div>
       </nav>
 
-      <Drawer open={moreOpen} onClose={() => setMoreOpen(false)} title="More">
-        <div className="p-2">
+      <BottomSheet open={moreOpen} onClose={() => setMoreOpen(false)} title={t('common.actions')}>
+        <div className="space-y-1">
           {visibleMore.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={() => setMoreOpen(false)}
-              className={cn('block rounded-md px-3 py-2 text-sm transition-colors', 'text-muted-base hover:bg-surface-secondary dark:hover:bg-dark-surface-secondary')}
+              className={cn(
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary'
+              )}
             >
-              {item.label}
+              {t(item.labelKey)}
             </NavLink>
           ))}
         </div>
-      </Drawer>
+      </BottomSheet>
     </>
   )
 }

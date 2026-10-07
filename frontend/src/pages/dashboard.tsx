@@ -6,33 +6,29 @@ import {
   Users,
   Package,
   Wrench,
-  CheckCircle,
-  AlertTriangle,
-  ArrowUpRight,
-  ArrowDownRight,
   ShoppingCart,
-  BarChart3,
+  ArrowUpRight,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  AreaChart,
+  Area,
   PieChart,
   Pie,
   Cell,
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
 } from 'recharts'
+import { KpiCard } from '@/components/ui'
+import { DashboardSkeleton } from '@/components/ui/skeleton'
+import { DataTable } from '@/components/ui/data-table'
+import { EmptyState } from '@/components/ui/state'
+import { Badge } from '@/components/ui'
+import { cn } from '@/utils/cn'
 import type { DashboardOverview, RepairTicket, Product } from '@/types'
-
-const kpiCards = [
-  { key: 'total', label: 'Total Revenue', icon: DollarSign, color: 'text-success', bg: 'bg-success/10', href: '/reports' },
-  { key: 'today', label: "Today's Revenue", icon: TrendingUp, color: 'text-info', bg: 'bg-info/10', href: '/reports' },
-  { key: 'month', label: 'Monthly Revenue', icon: DollarSign, color: 'text-primary', bg: 'bg-primary/10', href: '/reports' },
-]
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useQuery({
@@ -41,20 +37,18 @@ export default function DashboardPage() {
   })
 
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-32 rounded-xl bg-slate-100 animate-pulse" />
-          ))}
-        </div>
-        <div className="h-96 rounded-xl bg-slate-100 animate-pulse" />
-      </div>
-    )
+    return <DashboardSkeleton />
   }
 
   if (error || !data) {
-    return <div className="text-danger">Failed to load dashboard</div>
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <p className="text-sm text-danger font-medium">Failed to load dashboard</p>
+          <p className="text-xs text-muted mt-1">Please try again later</p>
+        </div>
+      </div>
+    )
   }
 
   const overview = data as DashboardOverview
@@ -81,150 +75,141 @@ export default function DashboardPage() {
     { label: 'Add Customer', href: '/customers/new', icon: Users, color: 'text-warning bg-warning/10 hover:bg-warning/20' },
   ]
 
+  const recentRepairsColumns = [
+    { key: 'ticket', header: 'Ticket', render: (row: RepairTicket) => <Link to={`/repairs/${row.id}`} className="font-medium text-primary hover:underline">{row.ticket_number}</Link> },
+    { key: 'customer', header: 'Customer', render: (row: RepairTicket) => `${row.customer.first_name} ${row.customer.last_name}` },
+    { key: 'device', header: 'Device', render: (row: RepairTicket) => `${row.device.brand} ${row.device.model}` },
+    { key: 'technician', header: 'Technician', render: (row: RepairTicket) => row.technician?.full_name || '-' },
+    { key: 'status', header: 'Status', render: (row: RepairTicket) => {
+      const colors: Record<string, 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'primary'> = { received: 'secondary', diagnosis: 'warning', waiting_customer: 'warning', approved: 'info', repairing: 'primary', testing: 'info', ready: 'success', delivered: 'default', cancelled: 'danger' }
+      return <Badge variant={colors[row.status] || 'secondary'}>{row.status_label}</Badge>
+    }},
+    { key: 'updated', header: 'Updated', render: (row: RepairTicket) => new Date(row.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) },
+  ]
+
   return (
-    <div className="space-y-6 page-enter">
+    <div className="space-y-6 page-enter max-w-[1440px] mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-sm text-muted">Here's what's happening with STAR STORE today.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Dashboard</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Here's what's happening with STAR STORE today.</p>
         </div>
         <div className="flex items-center gap-2">
           {quickActions.map((action) => (
             <Link
               key={action.label}
               to={action.href}
-              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-slate-200 hover:border-primary/20 hover:bg-primary/5"
+              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/40 hover:bg-primary-50 dark:hover:bg-dark-primary-light"
             >
               <action.icon className="h-4 w-4" />
               {action.label}
             </Link>
           ))}
-          <Link to="/reports" className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 hover:border-primary/20 hover:bg-primary/5">
-            <BarChart3 className="h-4 w-4" />
-            Reports
-          </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpiCards.map((card, idx) => (
-          <Link
-            key={card.key}
-            to={card.href}
-            className="bg-surface rounded-xl border border-slate-200 p-5 card-hover"
-            style={{ animationDelay: `${idx * 60}ms`, animationFillMode: 'both' }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted">{card.label}</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">
-                  {overview.revenue[card.key as keyof typeof overview.revenue]?.toLocaleString() ?? 0} TND
-                </p>
-              </div>
-              <div className={`h-10 w-10 rounded-lg ${card.bg} ${card.color} flex items-center justify-center`}>
-                <card.icon className="h-5 w-5" />
-              </div>
-            </div>
-          </Link>
-        ))}
-
-        <div className="bg-surface rounded-xl border border-slate-200 p-5 card-hover" style={{ animationDelay: '120ms', animationFillMode: 'both' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted">Repairs</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{overview.repairs.active}</p>
-              <p className="text-xs text-muted mt-1">{overview.repairs.pending} pending</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-warning/10 text-warning flex items-center justify-center">
-              <Wrench className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface rounded-xl border border-slate-200 p-5 card-hover" style={{ animationDelay: '160ms', animationFillMode: 'both' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted">Customers</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{overview.customers.total}</p>
-              <p className="text-xs text-muted mt-1">+{overview.customers.new_this_month} this month</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <Users className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface rounded-xl border border-slate-200 p-5 card-hover" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted">Products</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{overview.inventory.total_products}</p>
-              <p className="text-xs text-danger mt-1">{overview.inventory.low_stock} low stock</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-info/10 text-info flex items-center justify-center">
-              <Package className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface rounded-xl border border-slate-200 p-5 card-hover" style={{ animationDelay: '240ms', animationFillMode: 'both' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted">Completed Repairs</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{overview.repairs.completed}</p>
-              <p className="text-xs text-muted mt-1">{overview.repairs.ready} ready for pickup</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-success/10 text-success flex items-center justify-center">
-              <CheckCircle className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface rounded-xl border border-slate-200 p-5 card-hover" style={{ animationDelay: '280ms', animationFillMode: 'both' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted">Low Stock</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{overview.inventory.low_stock}</p>
-              <p className="text-xs text-danger mt-1">{overview.inventory.out_of_stock} out of stock</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-danger/10 text-danger flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard
+          title="Total Revenue"
+          value={`${overview.revenue.total.toLocaleString()} DT`}
+          trend={{ value: 12.5, label: 'vs last month' }}
+          icon={<DollarSign className="h-5 w-5" />}
+          iconVariant="primary"
+          href="/reports"
+          sparklineData={[
+            { value: 18000 }, { value: 22000 }, { value: 19500 }, { value: 25000 },
+            { value: 28000 }, { value: 26000 }, { value: overview.revenue.total },
+          ]}
+          sparklineColor="#2563EB"
+        />
+        <KpiCard
+          title="Today's Revenue"
+          value={`${overview.revenue.today.toLocaleString()} DT`}
+          trend={{ value: 8.2, label: 'vs yesterday' }}
+          icon={<TrendingUp className="h-5 w-5" />}
+          iconVariant="success"
+          href="/reports"
+          sparklineData={[
+            { value: 1200 }, { value: 1400 }, { value: 1300 }, { value: 1600 },
+            { value: 1500 }, { value: 1700 }, { value: overview.revenue.today },
+          ]}
+          sparklineColor="#16A34A"
+        />
+        <KpiCard
+          title="Active Repairs"
+          value={overview.repairs.active}
+          trend={{ value: 4.1 }}
+          icon={<Wrench className="h-5 w-5" />}
+          iconVariant="warning"
+          href="/repairs"
+          footer={<p className="text-xs text-slate-500 dark:text-slate-400">{overview.repairs.pending} pending • {overview.repairs.ready} ready</p>}
+        />
+        <KpiCard
+          title="Total Customers"
+          value={overview.customers.total.toLocaleString()}
+          trend={{ value: 6.3, label: 'new this month' }}
+          icon={<Users className="h-5 w-5" />}
+          iconVariant="info"
+          href="/customers"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-surface rounded-xl border border-slate-200 p-5">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Revenue Overview</h2>
+        <div className="lg:col-span-2 rounded-xl border border-slate-200 dark:border-dark-border bg-surface dark:bg-dark-surface p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Revenue Overview</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Your revenue performance over the selected period.</p>
+            </div>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
+              {['7D', '30D', '90D'].map((period) => (
+                <button
+                  key={period}
+                  className={cn(
+                    'px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors',
+                    period === '30D' ? 'bg-slate-900 dark:bg-slate-700 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  )}
+                >
+                  {period}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
+              <AreaChart data={revenueChartData}>
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2563EB" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#2563EB" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" className="dark:stroke-slate-700" />
+                <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip
-                  formatter={(value) => [`${Number(value).toLocaleString()} TND`, 'Revenue']}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0' }}
-                  cursor={{ fill: 'rgba(37, 99, 235, 0.05)' }}
+                  formatter={(value: any) => [`${Number(value).toLocaleString()} DT`, 'Revenue']}
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.08)' }}
+                  cursor={{ fill: 'rgba(37, 99, 235, 0.04)' }}
                 />
-                <Bar dataKey="value" fill="#2563EB" radius={[6, 6, 0, 0]} />
-              </BarChart>
+                <Area type="monotone" dataKey="value" stroke="#2563EB" strokeWidth={2} fill="url(#revenueGradient)" />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl border border-slate-200 p-5">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Repairs Overview</h2>
-          <div className="h-72">
+        <div className="rounded-xl border border-slate-200 dark:border-dark-border bg-surface dark:bg-dark-surface p-5">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1">Repairs Overview</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Current status of all repair tickets.</p>
+          <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={repairsChartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
+                  innerRadius={50}
+                  outerRadius={70}
                   paddingAngle={2}
                   dataKey="value"
                 >
@@ -232,134 +217,122 @@ export default function DashboardPage() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value} repairs`, '']} />
+                <Tooltip formatter={(value: any) => [`${value} repairs`, '']} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {repairsChartData.map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-muted">{item.name}</span>
-                  </div>
-                  <span className="font-medium text-slate-900">{item.value}</span>
+          </div>
+          <div className="mt-4 space-y-2.5">
+            {repairsChartData.map((item) => (
+              <div key={item.name} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-slate-600 dark:text-slate-300">{item.name}</span>
                 </div>
-              ))}
-            </div>
+                <span className="font-semibold text-slate-900 dark:text-slate-100 tabular-nums">{item.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-surface rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Recent Repairs</h2>
-            <Link to="/repairs" className="text-xs text-primary hover:underline flex items-center">
-              View all <ArrowUpRight className="h-3 w-3 ml-1" />
+        <div className="lg:col-span-2 rounded-xl border border-slate-200 dark:border-dark-border bg-surface dark:bg-dark-surface">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-dark-border">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Recent Repairs</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Latest repair tickets in the system.</p>
+            </div>
+            <Link to="/repairs" className="text-xs text-primary hover:text-primary-hover font-medium flex items-center gap-1">
+              View all <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="text-left px-4 py-3 font-medium text-slate-600">Ticket</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-600">Customer</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-600">Device</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-600">Technician</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
-                  <th className="text-right px-4 py-3 font-medium text-slate-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {overview.recent_repairs.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-muted">No recent repairs</td>
-                  </tr>
-                ) : (
-                  overview.recent_repairs.map((repair: RepairTicket) => (
-                    <tr key={repair.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3">
-                        <Link to={`/repairs/${repair.id}`} className="font-medium text-slate-900 hover:text-primary">
-                          {repair.ticket_number}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600">
-                        {repair.customer.first_name} {repair.customer.last_name}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600">
-                        {repair.device.brand} {repair.device.model}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600">
-                        {repair.technician?.full_name || '-'}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          repair.status === 'ready' ? 'bg-success-light text-success' :
-                          repair.status === 'repairing' ? 'bg-primary-light text-primary' :
-                          repair.status === 'testing' ? 'bg-info-light text-info' :
-                          repair.status === 'delivered' ? 'bg-slate-100 text-slate-700' :
-                          'bg-warning-light text-warning'
-                        }`}>
-                          {repair.status_label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Link to={`/repairs/${repair.id}`} className="p-2 hover:bg-slate-100 rounded-lg inline-flex items-center justify-center">
-                          <ArrowUpRight className="h-4 w-4 text-slate-600" />
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
+          <div className="p-0">
+            {overview.recent_repairs.length === 0 ? (
+              <div className="py-12">
+                <EmptyState title="No repairs yet" description="Create a repair ticket to start tracking customer devices." action={{ label: 'New Repair', onClick: () => window.location.href = '/repairs/new' }} />
+              </div>
+            ) : (
+              <DataTable
+                columns={recentRepairsColumns}
+                data={overview.recent_repairs}
+                keyExtractor={(row) => row.id}
+                pageSize={5}
+                mobileCard={(row: RepairTicket) => (
+                  <Link to={`/repairs/${row.id}`} className="block p-4 active:bg-slate-50 dark:active:bg-dark-surface-secondary">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-primary">{row.ticket_number}</span>
+                      <Badge variant={row.status === 'ready' ? 'success' : row.status === 'repairing' ? 'primary' : row.status === 'testing' ? 'info' : 'warning'}>{row.status_label}</Badge>
+                    </div>
+                     <div className="space-y-1">
+                       <p className="text-sm text-slate-700 dark:text-slate-200">{row.customer.first_name} {row.customer.last_name}</p>
+                       <p className="text-xs text-slate-500 dark:text-slate-400">{row.device.brand} {row.device.model}</p>
+                       <p className="text-xs text-slate-400">{row.technician?.full_name || 'Unassigned'}</p>
+                     </div>
+                  </Link>
                 )}
-              </tbody>
-            </table>
+              />
+            )}
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-surface rounded-xl border border-slate-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-900">Low Stock</h2>
-              <Link to="/inventory/low-stock" className="text-xs text-danger hover:underline flex items-center">
-                View all <ArrowDownRight className="h-3 w-3 ml-1" />
-              </Link>
+          <div className="rounded-xl border border-slate-200 dark:border-dark-border bg-surface dark:bg-dark-surface">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-dark-border">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Low Stock</h2>
+                <Link to="/inventory/low-stock" className="text-xs text-danger hover:text-danger/80 font-medium flex items-center gap-1">
+                  View all
+                </Link>
+              </div>
             </div>
-            <div className="space-y-3">
+            <div className="p-3">
               {overview.low_stock_products.length === 0 ? (
-                <p className="text-sm text-muted">No low stock products</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-6">All products in stock</p>
               ) : (
-                overview.low_stock_products.slice(0, 5).map((product: Product) => (
-                  <Link
-                    key={product.id}
-                    to={`/products/${product.id}`}
-                    className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:border-danger/20 hover:bg-danger/5 transition-colors"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">{product.name}</p>
-                      <p className="text-xs text-muted">{product.sku}</p>
-                    </div>
-                    <span className="text-xs px-2 py-1 rounded-full bg-danger/10 text-danger font-medium">
-                      {product.stock_quantity} left
-                    </span>
-                  </Link>
-                ))
+                <div className="space-y-1.5">
+                  {overview.low_stock_products.slice(0, 5).map((product: Product) => (
+                    <Link
+                      key={product.id}
+                      to={`/products/${product.id}`}
+                      className="flex items-center justify-between p-3 rounded-lg border border-slate-100 dark:border-slate-700/50 hover:border-danger/30 dark:hover:border-danger/40 hover:bg-danger-50/60 dark:hover:bg-dark-danger-light/20 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{product.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{product.sku}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-16 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-danger"
+                            style={{ width: `${Math.min(100, (product.stock_quantity / product.minimum_stock) * 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-danger whitespace-nowrap">{product.stock_quantity}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               )}
             </div>
           </div>
 
-          <div className="bg-surface rounded-xl border border-slate-200 p-5">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {quickActions.map((action) => (
-                <Link
-                  key={action.label}
-                  to={action.href}
-                  className={`flex items-center gap-2 p-3 rounded-lg border border-slate-200 transition-colors ${action.color}`}
-                >
-                  <action.icon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{action.label}</span>
-                </Link>
-              ))}
+          <div className="rounded-xl border border-slate-200 dark:border-dark-border bg-surface dark:bg-dark-surface">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-dark-border">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Quick Actions</h2>
+            </div>
+            <div className="p-3">
+              <div className="grid grid-cols-2 gap-2">
+                {quickActions.map((action) => (
+                  <Link
+                    key={action.label}
+                    to={action.href}
+                    className={cn('flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 transition-colors', action.color)}
+                  >
+                    <action.icon className="h-4 w-4" />
+                    <span className="text-sm font-medium">{action.label}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -4,9 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuth } from '@/context/auth-context'
 import { toast } from 'sonner'
-import { Store, UserPlus, Lock, Mail, Phone, Shield } from 'lucide-react'
+import { UserPlus, Lock, Mail, Phone, Shield } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import loginBg from '/images/dell.jpg'
+import { LOGO_IMAGE } from '@/utils/images'
+import { useI18n } from '@/i18n/context'
 
 const signupSchema = z.object({
   first_name: z.string().min(1, 'First name is required'),
@@ -25,6 +26,7 @@ type SignupForm = z.infer<typeof signupSchema>
 
 export default function SignupPage() {
   const { signup } = useAuth()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -65,27 +67,28 @@ export default function SignupPage() {
       <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-info/10 blur-3xl" />
       <div className="absolute top-1/3 left-1/3 h-48 w-48 -translate-x-1/2 rounded-full bg-success/10 blur-3xl" />
 
-      <div className="absolute inset-0 opacity-[0.03]">
-        <img src={loginBg} alt="STAR STORE" className="w-full h-full object-cover" />
-      </div>
-
       <div className="relative w-full max-w-md px-4 animate-fade-in">
         <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-xl shadow-slate-200/50 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-slate-900/50">
           <div className="p-8">
             <div className="flex flex-col items-center gap-4 mb-8">
-              <div className="h-12 w-12 rounded-xl brand-gradient text-white flex items-center justify-center shadow-lg shadow-primary/30">
-                <Store className="h-6 w-6" />
+              <div className="h-14 w-14 rounded-xl overflow-hidden shadow-lg shadow-primary/20">
+                <img
+                  src={LOGO_IMAGE}
+                  alt="STAR STORE"
+                  className="h-full w-full object-contain"
+                  loading="eager"
+                />
               </div>
               <div className="text-center">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white">Create your account</h1>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Get started with STAR STORE Manager</p>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{t('auth.register')}</h1>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">STAR STORE Manager</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">First Name</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.firstName')}</label>
                   <div className="relative">
                     <UserPlus className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                     <input
@@ -99,7 +102,7 @@ export default function SignupPage() {
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Last Name</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.lastName')}</label>
                   <div className="relative">
                     <UserPlus className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                     <input
@@ -115,7 +118,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.email')}</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input
@@ -131,7 +134,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Phone</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('common.phone')}</label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input
@@ -146,7 +149,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.password')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input
@@ -162,7 +165,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Confirm Password</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.confirmPassword')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input
@@ -178,7 +181,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Role</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('employees.role')}</label>
                 <div className="relative">
                   <Shield className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <select
@@ -206,14 +209,14 @@ export default function SignupPage() {
                 ) : (
                   <UserPlus className="h-4 w-4" />
                 )}
-                {loading ? 'Creating account...' : 'Sign up'}
+                {loading ? 'Creating account...' : t('auth.register')}
               </button>
             </form>
 
             <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
-              Already have an account?{' '}
+              {t('auth.hasAccount')}{' '}
               <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign in
+                {t('auth.login')}
               </Link>
             </p>
           </div>

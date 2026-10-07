@@ -4,6 +4,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { ProtectedRoute } from '@/components/common/protected-route'
 import { RoleGuard } from '@/components/common/role-guard'
 import { PublicLayout } from '@/components/layout/public-layout'
+import { CartProvider } from '@/context/cart-context'
 import LoginPage from '@/pages/login'
 import SignupPage from '@/pages/signup'
 import { PortalLayout } from '@/components/layout/portal-layout'
@@ -51,7 +52,12 @@ const PortalRepairs = lazy(() => import('@/pages/portal/repairs'))
 const PortalInvoices = lazy(() => import('@/pages/portal/invoices'))
 const PublicHomePage = lazy(() => import('@/pages/public/home'))
 const PublicShopPage = lazy(() => import('@/pages/public/shop'))
+const PublicCategoriesPage = lazy(() => import('@/pages/public/categories'))
+const PublicServicesPage = lazy(() => import('@/pages/public/services'))
+const PublicContactPage = lazy(() => import('@/pages/public/contact'))
 const PublicProductDetailPage = lazy(() => import('@/pages/public/product-detail'))
+const PublicCartPage = lazy(() => import('@/pages/public/cart'))
+const PublicCheckoutPage = lazy(() => import('@/pages/public/checkout'))
 
 function PageSuspense({ children: _children }: { children?: ReactNode }) {
   return (
@@ -80,11 +86,20 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <PublicLayout />,
+    element: (
+      <CartProvider>
+        <PublicLayout />
+      </CartProvider>
+    ),
     children: [
       { index: true, element: lazyElement(<PublicHomePage />) },
       { path: 'shop', element: lazyElement(<PublicShopPage />) },
-      { path: 'product/:id', element: lazyElement(<PublicProductDetailPage productId="" />) },
+      { path: 'categories', element: lazyElement(<PublicCategoriesPage />) },
+      { path: 'services', element: lazyElement(<PublicServicesPage />) },
+      { path: 'contact', element: lazyElement(<PublicContactPage />) },
+      { path: 'product/:id', element: lazyElement(<PublicProductDetailPage />) },
+      { path: 'cart', element: lazyElement(<PublicCartPage />) },
+      { path: 'checkout', element: lazyElement(<PublicCheckoutPage />) },
     ],
   },
   {
