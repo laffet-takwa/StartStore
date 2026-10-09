@@ -20,57 +20,59 @@ import { useAuth } from '@/context/auth-context'
 import type { Role } from '@/types'
 import { cn } from '@/utils/cn'
 import { LOGO_IMAGE } from '@/utils/images'
+import { useI18n } from '@/i18n/context'
 
 const sidebarSections = [
   {
-    title: 'Main',
+    titleKey: 'navigation.main',
     items: [
-      { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'sales'] },
+      { to: '/dashboard', labelKey: 'dashboard.title', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'sales'] },
     ],
   },
   {
-    title: 'Operations',
+    titleKey: 'navigation.operations',
     items: [
-      { to: '/repairs', label: 'Repairs', icon: Wrench, roles: ['admin', 'manager', 'technician'] },
-      { to: '/customers', label: 'Customers', icon: Users, roles: ['admin', 'manager', 'sales', 'technician'] },
-      { to: '/devices', label: 'Devices', icon: Monitor, roles: ['admin', 'manager', 'sales', 'technician'] },
-      { to: '/sales', label: 'Sales', icon: ShoppingCart, roles: ['admin', 'manager', 'sales'] },
+      { to: '/repairs', labelKey: 'repairs.title', icon: Wrench, roles: ['admin', 'manager', 'technician'] },
+      { to: '/customers', labelKey: 'customers.title', icon: Users, roles: ['admin', 'manager', 'sales', 'technician'] },
+      { to: '/devices', labelKey: 'devices.title', icon: Monitor, roles: ['admin', 'manager', 'sales', 'technician'] },
+      { to: '/sales', labelKey: 'sales.title', icon: ShoppingCart, roles: ['admin', 'manager', 'sales'] },
     ],
   },
   {
-    title: 'Catalog',
+    titleKey: 'navigation.catalog',
     items: [
-      { to: '/products', label: 'Products', icon: Package, roles: ['admin', 'manager', 'sales', 'technician'] },
-      { to: '/categories', label: 'Categories', icon: FolderTree, roles: ['admin', 'manager'] },
-      { to: '/suppliers', label: 'Suppliers', icon: Truck, roles: ['admin', 'manager'] },
+      { to: '/products', labelKey: 'products.title', icon: Package, roles: ['admin', 'manager', 'sales', 'technician'] },
+      { to: '/categories', labelKey: 'categories.title', icon: FolderTree, roles: ['admin', 'manager'] },
+      { to: '/suppliers', labelKey: 'suppliers.title', icon: Truck, roles: ['admin', 'manager'] },
     ],
   },
   {
-    title: 'Inventory',
+    titleKey: 'navigation.inventory',
     items: [
-      { to: '/inventory', label: 'Stock', icon: Warehouse, roles: ['admin', 'manager'] },
+      { to: '/inventory', labelKey: 'inventory.title', icon: Warehouse, roles: ['admin', 'manager'] },
     ],
   },
   {
-    title: 'Finance',
+    titleKey: 'navigation.finance',
     items: [
-      { to: '/payments', label: 'Payments', icon: CreditCard, roles: ['admin', 'manager', 'sales'] },
-      { to: '/invoices', label: 'Invoices', icon: FileText, roles: ['admin', 'manager', 'sales'] },
-      { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['admin', 'manager'] },
+      { to: '/payments', labelKey: 'payments.title', icon: CreditCard, roles: ['admin', 'manager', 'sales'] },
+      { to: '/invoices', labelKey: 'invoices.title', icon: FileText, roles: ['admin', 'manager', 'sales'] },
+      { to: '/reports', labelKey: 'reports.title', icon: BarChart3, roles: ['admin', 'manager'] },
     ],
   },
   {
-    title: 'System',
+    titleKey: 'navigation.system',
     items: [
-      { to: '/notifications', label: 'Notifications', icon: Bell, roles: ['admin', 'manager', 'technician', 'sales'] },
-      { to: '/audit-logs', label: 'Audit Logs', icon: ScrollText, roles: ['admin', 'manager'] },
-      { to: '/employees', label: 'Employees', icon: UserCog, roles: ['admin'] },
+      { to: '/notifications', labelKey: 'notifications.title', icon: Bell, roles: ['admin', 'manager', 'technician', 'sales'] },
+      { to: '/audit-logs', labelKey: 'auditLogs.title', icon: ScrollText, roles: ['admin', 'manager'] },
+      { to: '/employees', labelKey: 'employees.title', icon: UserCog, roles: ['admin'] },
     ],
   },
 ]
 
 export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: () => void }) {
   const { user } = useAuth()
+  const { t } = useI18n()
   const role = (user?.role || 'sales') as Role
 
   const visibleSections = sidebarSections
@@ -98,7 +100,7 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
             />
             <div className="leading-tight">
               <span className="text-sm font-bold text-slate-900 dark:text-slate-50 block">STAR STORE</span>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block">Management</span>
+              <span className="text-[10px] text-muted dark:text-slate-500 block">Management</span>
             </div>
           </Link>
         ) : (
@@ -115,10 +117,10 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-3 px-2.5 space-y-5 scrollbar-thin">
         {visibleSections.map((section) => (
-          <div key={section.title}>
+          <div key={section.titleKey}>
             {!collapsed && (
-              <p className="px-2 mb-1.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                {section.title}
+              <p className="px-2 mb-1.5 text-[10px] font-semibold text-muted dark:text-slate-500 uppercase tracking-wider">
+                {t(section.titleKey)}
               </p>
             )}
             <div className="space-y-0.5">
@@ -143,8 +145,8 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
                       {isActive && (
                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary dark:bg-dark-primary" />
                       )}
-                      <item.icon className={cn('h-[18px] w-[18px] flex-shrink-0 transition-colors', isActive ? 'text-primary dark:text-dark-primary' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300')} />
-                      {!collapsed && <span className="truncate">{item.label}</span>}
+                      <item.icon className={cn('h-[18px] w-[18px] flex-shrink-0 transition-colors', isActive ? 'text-primary dark:text-dark-primary' : 'text-muted dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300')} />
+                      {!collapsed && <span className="truncate">{t(item.labelKey)}</span>}
                     </>
                   )}
                 </NavLink>
@@ -157,7 +159,7 @@ export function Sidebar({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       {/* Footer */}
       <div className="p-3 border-t border-slate-200 dark:border-dark-border">
         {!collapsed ? (
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center">STAR STORE v1.0</p>
+          <p className="text-[10px] text-muted dark:text-slate-500 text-center">STAR STORE v1.0</p>
         ) : (
           <div className="flex justify-center">
             <div className="h-6 w-6 rounded brand-gradient opacity-80" />

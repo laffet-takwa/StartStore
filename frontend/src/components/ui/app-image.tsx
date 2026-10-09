@@ -60,7 +60,7 @@ export function AppImage({
       )}
 
       {showFallback && (
-        <div className={cn('absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-300 dark:text-slate-600', fallbackClassName)}>
+        <div className={cn('absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-600', fallbackClassName)}>
           <Package className="h-10 w-10" />
           <span className="text-[11px] text-slate-400 dark:text-slate-500">Image unavailable</span>
         </div>

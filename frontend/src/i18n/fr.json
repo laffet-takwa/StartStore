@@ -119,17 +119,31 @@
     "categories": "Catégories",
     "services": "Services",
     "repairs": "Réparations",
-    "education": "Éducation",
+    "education": "Formation",
     "robotics": "Robotique",
     "contact": "Contact",
-    "track": "Suivre",
+    "track": "Suivi",
     "cart": "Panier",
     "account": "Compte",
     "profile": "Profil",
     "settings": "Paramètres",
     "notifications": "Notifications",
     "help": "Aide",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "main": "Principal",
+    "operations": "Opérations",
+    "catalog": "Catalogue",
+    "inventory": "Stock",
+    "finance": "Finance",
+    "system": "Système"
+  },
+  "home": {
+    "whyStarStore": "Pourquoi STAR STORE",
+    "whyStarStoreSubtitle": "Construit sur la confiance, la technologie et la précision",
+    "trustWarranty": "Garantie assurée",
+    "trustDelivery": "Livraison rapide",
+    "trustSupport": "Support expert",
+    "trustQuality": "Qualité premium"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -432,6 +446,10 @@
     "orderConfirmed": "Commande confirmée",
     "paymentReceived": "Paiement reçu",
     "repairUpdated": "Réparation mise à jour"
+  },
+  "auditLogs": {
+    "title": "Journaux d'audit",
+    "subtitle": "Suivez l'activité et les modifications du système"
   },
   "employees": {
     "title": "Employés",

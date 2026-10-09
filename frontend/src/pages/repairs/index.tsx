@@ -6,21 +6,23 @@ import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Card, CardBody, Badge, Button, EmptyState } from '@/components/ui'
 import { useDebouncedValue } from '@/hooks/use-debounce'
+import { useI18n } from '@/i18n/context'
 import type { RepairTicket } from '@/types'
 
 const STATUS_TABS = [
-  { value: '', label: 'All', icon: null },
-  { value: 'received', label: 'Received', icon: null },
-  { value: 'diagnosis', label: 'Diagnosis', icon: null },
-  { value: 'waiting_customer', label: 'Waiting', icon: null },
-  { value: 'repairing', label: 'Repairing', icon: null },
-  { value: 'testing', label: 'Testing', icon: null },
-  { value: 'ready', label: 'Ready', icon: null },
-  { value: 'delivered', label: 'Delivered', icon: null },
-  { value: 'cancelled', label: 'Cancelled', icon: null },
+  { value: '', labelKey: 'common.all', label: 'All' },
+  { value: 'received', labelKey: 'repairs.received', label: 'Received' },
+  { value: 'diagnosis', labelKey: 'repairs.diagnosis', label: 'Diagnosis' },
+  { value: 'waiting_customer', labelKey: 'repairs.waitingCustomer', label: 'Waiting' },
+  { value: 'repairing', labelKey: 'repairs.repairing', label: 'Repairing' },
+  { value: 'testing', labelKey: 'repairs.testing', label: 'Testing' },
+  { value: 'ready', labelKey: 'repairs.ready', label: 'Ready' },
+  { value: 'delivered', labelKey: 'repairs.delivered', label: 'Delivered' },
+  { value: 'cancelled', labelKey: 'repairs.cancelled', label: 'Cancelled' },
 ]
 
 export default function RepairsPage() {
+  const { t } = useI18n()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -47,11 +49,11 @@ export default function RepairsPage() {
     <div className="space-y-4 page-enter">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Repairs</h1>
-          <p className="text-sm text-muted">Manage repair tickets and technician workflow</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t('repairs.title')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('repairs.subtitle')}</p>
         </div>
         <Link to="/repairs/new">
-          <Button icon={<Plus className="h-4 w-4" />}>New Repair</Button>
+          <Button icon={<Plus className="h-4 w-4" />}>{t('repairs.newRepair')}</Button>
         </Link>
       </div>
 
@@ -64,7 +66,7 @@ export default function RepairsPage() {
                 type="text"
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                placeholder="Search repairs..."
+                placeholder={t('common.search')}
                 className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -75,7 +77,7 @@ export default function RepairsPage() {
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
                 className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
-                <option value="">All Statuses</option>
+                <option value="">{t('common.all')} Statuses</option>
                 <option value="received">Received</option>
                 <option value="diagnosis">Diagnosis</option>
                 <option value="waiting_customer">Waiting Customer</option>
@@ -102,7 +104,7 @@ export default function RepairsPage() {
                 : 'bg-surface border border-slate-200 text-muted hover:text-base hover:border-primary/20'
             }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>

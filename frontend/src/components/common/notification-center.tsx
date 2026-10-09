@@ -161,7 +161,7 @@ export function NotificationCenter() {
                               {notification.message && (
                                 <p className="text-xs text-muted mt-0.5 line-clamp-2">{notification.message}</p>
                               )}
-                              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                              <p className="text-[11px] text-muted dark:text-slate-500 mt-1">
                                 {new Date(notification.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                               </p>
                             </div>

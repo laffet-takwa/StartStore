@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { motion } from 'framer-motion'
 import { useAuth } from '@/context/auth-context'
 import { toast } from 'sonner'
 import { Link, useNavigate } from 'react-router-dom'
 import { LOGO_IMAGE } from '@/utils/images'
 import { useI18n } from '@/i18n/context'
+import { Input, Button } from '@/components/ui'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -44,71 +46,83 @@ export default function LoginPage() {
       <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-info/10 blur-3xl" />
       <div className="absolute top-1/3 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-warning/10 blur-3xl" />
 
-      <div className="relative w-full max-w-md px-4 animate-fade-in">
-        <div className="bg-surface/80 rounded-2xl shadow-sm border border-slate-200 p-8 backdrop-blur">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative w-full max-w-md px-4"
+      >
+        <div className="bg-surface/80 rounded-2xl shadow-sm border border-border p-8 backdrop-blur">
           <div className="flex flex-col items-center gap-4 mb-8">
-            <div className="h-14 w-14 rounded-xl overflow-hidden shadow-lg shadow-primary/20">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="h-14 w-14 rounded-xl overflow-hidden shadow-lg shadow-primary/20"
+            >
               <img
                 src={LOGO_IMAGE}
                 alt="STAR STORE"
                 className="h-full w-full object-contain"
                 loading="eager"
               />
+            </motion.div>
+            <div className="text-center">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{t('auth.welcomeBack')}</h1>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">STAR STORE Manager</p>
             </div>
-             <div className="text-center">
-               <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{t('auth.welcomeBack')}</h1>
-               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">STAR STORE Manager</p>
-             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.email')}</label>
-              <input
-                type="email"
-                {...register('email')}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white dark:bg-dark-surface dark:border-slate-700 dark:text-slate-100"
-                placeholder="you@starstore.tn"
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-danger animate-slide-up">{errors.email.message}</p>
-              )}
-            </div>
+          <motion.form
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5"
+          >
+            <Input
+              label={t('auth.email')}
+              type="email"
+              {...register('email')}
+              error={errors.email?.message}
+              placeholder="you@starstore.tn"
+            />
 
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">{t('auth.password')}</label>
-              <input
-                type="password"
-                {...register('password')}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white dark:bg-dark-surface dark:border-slate-700 dark:text-slate-100"
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-danger animate-slide-up">{errors.password.message}</p>
-              )}
-            </div>
+            <Input
+              label={t('auth.password')}
+              type="password"
+              {...register('password')}
+              error={errors.password?.message}
+              placeholder="••••••••"
+            />
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full brand-gradient text-white py-2.5 rounded-lg font-medium hover:opacity-90 disabled:opacity-60 transition-all btn-primary-glow"
-            >
+            <Button type="submit" disabled={loading} className="w-full" size="lg">
               {loading ? t('auth.signingIn') : t('auth.login')}
-            </button>
-          </form>
+            </Button>
+          </motion.form>
 
-          <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400"
+          >
             {t('auth.noAccount')}{' '}
             <Link to="/signup" className="text-primary hover:underline">
               {t('auth.register')}
             </Link>
-          </p>
+          </motion.p>
 
-          <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.25 }}
+            className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500"
+          >
             STAR STORE MANAGER v1.0
-          </p>
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

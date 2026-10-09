@@ -5,6 +5,7 @@ import { TopNavbar } from '@/components/layout/top-navbar'
 import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav'
 import { AccessibilityManager } from '@/components/common/accessibility-manager'
 import { Toaster } from 'sonner'
+import { PageTransition } from '@/components/common/page-transition'
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -23,7 +24,9 @@ export function AppLayout() {
         <TopNavbar onToggleSidebar={() => setSidebarCollapsed((c) => !c)} />
 
         <main id="main-content" className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 lg:pb-6" role="main">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
 

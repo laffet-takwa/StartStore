@@ -42,7 +42,7 @@ export function TopNavbar({ onToggleSidebar }: { onToggleSidebar: () => void }) 
           </button>
           <div className="hidden md:flex items-center gap-2">
             <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">STAR STORE</span>
-            <span className="text-slate-300 dark:text-slate-600">/</span>
+            <span className="text-slate-400 dark:text-slate-600">/</span>
             <span className="text-sm text-slate-500 dark:text-slate-400">{t('dashboard.title')}</span>
           </div>
         </div>
@@ -54,9 +54,9 @@ export function TopNavbar({ onToggleSidebar }: { onToggleSidebar: () => void }) 
               'hidden md:flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all border border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/40 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary min-w-[200px]'
             )}
           >
-            <Search className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-400 flex-1 text-left">{t('common.search')}</span>
-            <kbd className={cn('rounded border px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border-slate-200 dark:border-slate-700')}>
+            <Search className="h-4 w-4 text-muted" />
+            <span className="text-muted flex-1 text-left">{t('common.search')}</span>
+            <kbd className={cn('rounded border px-1.5 py-0.5 text-[10px] font-mono text-muted border-slate-200 dark:border-slate-700')}>
               ⌘K
             </kbd>
           </button>
@@ -117,9 +117,9 @@ export function TopNavbar({ onToggleSidebar }: { onToggleSidebar: () => void }) 
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-50 leading-tight">
                   {user?.first_name} {user?.last_name}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 capitalize leading-tight">{user?.role_display}</p>
+                <p className="text-xs text-muted dark:text-slate-500 capitalize leading-tight">{user?.role_display}</p>
               </div>
-              <ChevronDown className="h-4 w-4 text-slate-400 hidden md:block" />
+              <ChevronDown className="h-4 w-4 text-muted hidden md:block" />
             </button>
 
             {profileOpen && (
@@ -130,7 +130,7 @@ export function TopNavbar({ onToggleSidebar }: { onToggleSidebar: () => void }) 
               >
                 <div className="px-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50">
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-50">{user?.first_name} {user?.last_name}</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">{user?.email}</p>
+                  <p className="text-xs text-muted dark:text-slate-500">{user?.email}</p>
                 </div>
                  <Link
                   to="/settings"

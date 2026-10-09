@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { repairsApi, customersApi, devicesApi, employeesApi } from '@/api'
 import { ArrowLeft, Save } from 'lucide-react'
+import { useI18n } from '@/i18n/context'
 import { toast } from 'sonner'
 import { Card, CardBody, Button } from '@/components/ui'
 
@@ -23,6 +24,7 @@ export default function RepairEditPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { t } = useI18n()
   const isEdit = Boolean(id)
 
   const { data: customersData } = useQuery({
@@ -88,8 +90,8 @@ export default function RepairEditPage() {
           <ArrowLeft className="h-5 w-5 text-slate-600" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{isEdit ? 'Edit Repair' : 'New Repair'}</h1>
-          <p className="text-sm text-muted">{isEdit ? 'Update repair information' : 'Create a new repair ticket'}</p>
+          <h1 className="text-2xl font-bold text-slate-900">{isEdit ? t('common.edit') : t('repairs.newRepair')}</h1>
+          <p className="text-sm text-muted">{isEdit ? t('common.edit') : t('repairs.createRepairHint')}</p>
         </div>
       </div>
 

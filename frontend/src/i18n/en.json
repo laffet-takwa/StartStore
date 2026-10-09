@@ -129,7 +129,21 @@
     "settings": "Settings",
     "notifications": "Notifications",
     "help": "Help",
-    "logout": "Logout"
+    "logout": "Logout",
+    "main": "Main",
+    "operations": "Operations",
+    "catalog": "Catalog",
+    "inventory": "Inventory",
+    "finance": "Finance",
+    "system": "System"
+  },
+  "home": {
+    "whyStarStore": "Why STAR STORE",
+    "whyStarStoreSubtitle": "Built on trust, technology, and precision",
+    "trustWarranty": "Warranty guaranteed",
+    "trustDelivery": "Fast delivery",
+    "trustSupport": "Expert support",
+    "trustQuality": "Premium quality"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -432,6 +446,10 @@
     "orderConfirmed": "Order confirmed",
     "paymentReceived": "Payment received",
     "repairUpdated": "Repair updated"
+  },
+  "auditLogs": {
+    "title": "Audit Logs",
+    "subtitle": "Track system activity and changes"
   },
   "employees": {
     "title": "Employees",

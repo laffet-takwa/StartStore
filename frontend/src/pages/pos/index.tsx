@@ -128,7 +128,7 @@ export default function PosPage() {
         <div className="flex-1 overflow-y-auto p-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <ShoppingCart className="h-12 w-12 text-slate-300 mb-3" />
+              <ShoppingCart className="h-12 w-12 text-slate-400 dark:text-slate-600 mb-3" />
               <p className="text-sm text-muted">Cart is empty</p>
               <p className="text-xs text-muted mt-1">Add products to get started</p>
             </div>

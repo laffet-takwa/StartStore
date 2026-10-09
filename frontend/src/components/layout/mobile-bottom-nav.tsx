@@ -53,8 +53,8 @@ export function MobileBottomNav() {
                   key={item.to}
                   onClick={() => setMoreOpen(true)}
                   className={cn(
-                    'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 text-[11px] font-medium transition-all rounded-xl min-w-[64px]',
-                    'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                     'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 text-[11px] font-medium transition-all rounded-xl min-w-[64px]',
+                     'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                   )}
                   >
                     <item.icon className="h-5 w-5" />
@@ -71,7 +71,7 @@ export function MobileBottomNav() {
                     'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 text-[11px] font-medium transition-all rounded-xl min-w-[64px] relative',
                     isActive
                       ? 'text-primary'
-                      : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                       : 'text-muted dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                   )
                 }
               >
@@ -102,8 +102,8 @@ export function MobileBottomNav() {
               to={item.to}
               onClick={() => setMoreOpen(false)}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary'
+                     'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                     'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-surface-secondary'
               )}
             >
               {t(item.labelKey)}

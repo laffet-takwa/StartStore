@@ -119,17 +119,31 @@
     "categories": "الفئات",
     "services": "الخدمات",
     "repairs": "الإصلاحات",
-    "education": "التعليم",
-    "robotics": "الروبوتيك",
+    "education": "التدريب",
+    "robotics": "الروبوتات",
     "contact": "اتصل بنا",
-    "track": "تتبع",
+    "track": "التتبع",
     "cart": "السلة",
     "account": "الحساب",
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "notifications": "الإشعارات",
     "help": "مساعدة",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "main": "الرئيسي",
+    "operations": "العمليات",
+    "catalog": "الكتالوج",
+    "inventory": "المخزون",
+    "finance": "المالية",
+    "system": "النظام"
+  },
+  "home": {
+    "whyStarStore": "لماذا ستار ستور",
+    "whyStarStoreSubtitle": "مبني على الثقة والتكنولوجيا والدقة",
+    "trustWarranty": "ضمان مضمون",
+    "trustDelivery": "توصيل سريع",
+    "trustSupport": "دعم متخصص",
+    "trustQuality": "جودة متميزة"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -432,6 +446,10 @@
     "orderConfirmed": "تم تأكيد الطلب",
     "paymentReceived": "تم استلام الدفع",
     "repairUpdated": "تم تحديث الإصلاح"
+  },
+  "auditLogs": {
+    "title": "سجلات التدقيق",
+    "subtitle": "تتبع نشاط النظام والتغييرات"
   },
   "employees": {
     "title": "الموظفون",
