@@ -2,13 +2,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { motion } from 'framer-motion'
 import { useAuth } from '@/context/auth-context'
 import { toast } from 'sonner'
 import { Link, useNavigate } from 'react-router-dom'
 import { LOGO_IMAGE } from '@/utils/images'
 import { useI18n } from '@/i18n/context'
-import { Input, Button } from '@/components/ui'
 
 const signupSchema = z.object({
   first_name: z.string().min(1, 'First name is required'),
@@ -30,12 +28,14 @@ export default function SignupPage() {
   const { t } = useI18n()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const [error, setError] = useState('')
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
   })
 
   const onSubmit = async (data: SignupForm) => {
+    setError('')
     setLoading(true)
     try {
       await signup({
@@ -49,83 +49,63 @@ export default function SignupPage() {
       toast.success('Account created successfully!')
       navigate('/dashboard', { replace: true })
     } catch {
-      toast.error('Failed to create account')
+      setError('Failed to create account')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="relative min-h-screen bg-background flex items-center justify-center overflow-hidden">
-      <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-info/10 blur-3xl" />
-      <div className="absolute top-1/3 left-1/3 h-48 w-48 -translate-x-1/2 rounded-full bg-success/10 blur-3xl" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="relative w-full max-w-md px-4"
-      >
-        <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-xl shadow-slate-200/50 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-slate-900/50">
-          <div className="p-8">
-            <div className="flex flex-col items-center gap-4 mb-8">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="h-14 w-14 rounded-xl overflow-hidden shadow-lg shadow-primary/20"
-              >
-                <img
-                  src={LOGO_IMAGE}
-                  alt="STAR STORE"
-                  className="h-full w-full object-contain"
-                  loading="eager"
-                />
-              </motion.div>
-              <div className="text-center">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{t('auth.register')}</h1>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">STAR STORE Manager</p>
-              </div>
-            </div>
-
-            <motion.form
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              <div className="grid grid-cols-2 gap-3">
-                <Input label={t('auth.firstName')} {...register('first_name')} error={errors.first_name?.message} placeholder="John" />
-                <Input label={t('auth.lastName')} {...register('last_name')} error={errors.last_name?.message} placeholder="Doe" />
-              </div>
-
-              <Input label={t('auth.email')} type="email" {...register('email')} error={errors.email?.message} placeholder="you@starstore.tn" />
-              <Input label={t('common.phone')} {...register('phone')} placeholder="+216 00 000 000" />
-
-              <Input label={t('auth.password')} type="password" {...register('password')} error={errors.password?.message} placeholder="••••••••" />
-              <Input label={t('auth.confirmPassword')} type="password" {...register('confirmPassword')} error={errors.confirmPassword?.message} placeholder="••••••••" />
-
-              <Button type="submit" disabled={loading} className="w-full" size="lg">
-                {loading ? 'Creating account...' : t('auth.register')}
-              </Button>
-            </motion.form>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400"
-            >
-              {t('auth.hasAccount')}{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                {t('auth.login')}
-              </Link>
-            </motion.p>
+    <div className="au cd st" style={{ boxShadow: 'var(--sh)' }}>
+      <img className="trl" src={LOGO_IMAGE} alt="STAR STORE" />
+      <h2 className="hf" style={{ textAlign: 'center', fontSize: 22 }}>
+        {t('auth.register')}
+      </h2>
+      {error && <p className="msg er">{error}</p>}
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="row" style={{ gap: 10 }}>
+          <div style={{ flex: 1, minWidth: 120 }}>
+            <label style={{ marginTop: 10 }}>{t('auth.firstName')}
+              <input className="in" style={{ width: '100%', marginTop: 4 }} placeholder="John" {...register('first_name')} />
+            </label>
+          </div>
+          <div style={{ flex: 1, minWidth: 120 }}>
+            <label style={{ marginTop: 10 }}>{t('auth.lastName')}
+              <input className="in" style={{ width: '100%', marginTop: 4 }} placeholder="Doe" {...register('last_name')} />
+            </label>
           </div>
         </div>
-      </motion.div>
+        {(errors.first_name || errors.last_name) && (
+          <p className="msg er" style={{ marginTop: 6 }}>{errors.first_name?.message || errors.last_name?.message}</p>
+        )}
+
+        <label>{t('auth.email')}
+          <input className="in" type="email" autoComplete="email" placeholder="you@starstore.tn" {...register('email')} />
+        </label>
+        {errors.email && <p className="msg er" style={{ marginTop: 6 }}>{errors.email.message}</p>}
+
+        <label>{t('common.phone')}
+          <input className="in" placeholder="+216 00 000 000" {...register('phone')} />
+        </label>
+
+        <label>{t('auth.password')}
+          <input className="in" type="password" autoComplete="new-password" placeholder="••••••••" {...register('password')} />
+        </label>
+        {errors.password && <p className="msg er" style={{ marginTop: 6 }}>{errors.password.message}</p>}
+
+        <label>{t('auth.confirmPassword')}
+          <input className="in" type="password" autoComplete="new-password" placeholder="••••••••" {...register('confirmPassword')} />
+        </label>
+        {errors.confirmPassword && <p className="msg er" style={{ marginTop: 6 }}>{errors.confirmPassword.message}</p>}
+
+        <button className="btn" type="submit" disabled={loading} style={{ width: '100%', marginTop: 14 }}>
+          {loading ? 'Creating account...' : t('auth.register')}
+        </button>
+      </form>
+      <p className="mu" style={{ marginTop: 14 }}>
+        {t('auth.hasAccount')}{' '}
+        <Link to="/login" className="lk">{t('auth.login')}</Link>
+      </p>
     </div>
   )
 }

@@ -4,6 +4,7 @@ Views for inventory app.
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import transaction
 from django.db.models import Sum, Count, Q
@@ -20,6 +21,8 @@ from .serializers import (
     ProductUpdateSerializer,
     InventoryMovementSerializer,
     InventoryAdjustmentSerializer,
+    PublicProductSerializer,
+    PublicCategorySerializer,
 )
 from apps.accounts.permissions import IsManagerOrAdmin, IsSalesOrAbove
 
@@ -161,3 +164,34 @@ class InventoryMovementViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return InventoryMovement.objects.select_related('product', 'created_by').all()
+
+
+class PublicProductViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public, read-only product catalog for the public storefront."""
+
+    serializer_class = PublicProductSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category']
+    search_fields = ['name', 'sku', 'brand', 'description']
+    ordering_fields = ['name', 'selling_price', 'stock_quantity', 'created_at']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return Product.objects.filter(is_active=True).select_related('category')
+
+
+class PublicCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public, read-only categories for the public storefront."""
+
+    serializer_class = PublicCategorySerializer
+    permission_classes = [AllowAny]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['name']
+
+    def get_queryset(self):
+        return Category.objects.filter(is_active=True).annotate(
+            product_count=Count('products', distinct=True)
+        )

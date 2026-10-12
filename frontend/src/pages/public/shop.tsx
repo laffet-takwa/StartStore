@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { productsApi, categoriesApi } from '@/api'
+import { publicProductsApi, publicCategoriesApi } from '@/api'
 import { Search, ShoppingCart, SlidersHorizontal, X } from 'lucide-react'
 import { Card, CardBody, Badge, Button, EmptyState, Select } from '@/components/ui'
 import { AppImage } from '@/components/ui'
@@ -20,12 +20,12 @@ export default function PublicShopPage() {
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['public-shop-products', search, categoryFilter, sortBy],
-    queryFn: () => productsApi.list({ search, category: categoryFilter, page_size: 50 }),
+    queryFn: () => publicProductsApi.list({ search, category: categoryFilter, page_size: 50 }),
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: ['public-shop-categories'],
-    queryFn: () => categoriesApi.list({ page_size: 20 }),
+    queryFn: () => publicCategoriesApi.list({ page_size: 20 }),
   })
 
   const products = (productsData as any)?.results || []
@@ -69,9 +69,9 @@ export default function PublicShopPage() {
           {categories.map((cat: Category) => (
             <button
               key={cat.id}
-              onClick={() => { setCategoryFilter(cat.slug); setFiltersOpen(false) }}
+              onClick={() => { setCategoryFilter(cat.id); setFiltersOpen(false) }}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                categoryFilter === cat.slug ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:bg-surface-secondary'
+                categoryFilter === cat.id ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:bg-surface-secondary'
               }`}
             >
               {cat.name}

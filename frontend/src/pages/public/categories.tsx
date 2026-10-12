@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { categoriesApi } from '@/api'
+import { publicCategoriesApi } from '@/api'
 import { ArrowRight, Monitor } from 'lucide-react'
 import { Card, CardBody, EmptyState } from '@/components/ui'
 import { useI18n } from '@/i18n/context'
@@ -21,7 +21,7 @@ export default function PublicCategoriesPage() {
   const { t } = useI18n()
   const { data: categoriesData } = useQuery({
     queryKey: ['public-categories'],
-    queryFn: () => categoriesApi.list({ page_size: 50 }),
+    queryFn: () => publicCategoriesApi.list({ page_size: 50 }),
   })
 
   const categories = (categoriesData as any)?.results || []

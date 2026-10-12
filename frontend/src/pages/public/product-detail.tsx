@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { productsApi } from '@/api'
+import { publicProductsApi } from '@/api'
 import { Link, useParams } from 'react-router-dom'
 import { ShoppingCart, Heart, ArrowLeft, Maximize2 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
@@ -23,7 +23,7 @@ export default function PublicProductDetailPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['public-product', productId],
-    queryFn: () => productsApi.get(productId),
+    queryFn: () => publicProductsApi.get(productId),
   })
 
   if (isLoading) {

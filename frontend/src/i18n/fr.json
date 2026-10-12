@@ -143,7 +143,15 @@
     "trustWarranty": "Garantie assurée",
     "trustDelivery": "Livraison rapide",
     "trustSupport": "Support expert",
-    "trustQuality": "Qualité premium"
+    "trustQuality": "Qualité premium",
+    "heroTitle": "Du matériel informatique fiable. Des réparations que vous suivez.",
+    "heroSubtitle": "Achetez ordinateurs et composants, ou déposez un appareil et suivez chaque étape en ligne.",
+    "shopNow": "Acheter",
+    "trackRepair": "Suivre une réparation",
+    "promoTitle": "Parlez-nous avant d'acheter du neuf.",
+    "promoText": "Votre ordinateur ou téléphone n'est peut-être pas hors service : une simple réparation suffit souvent. Chez Star Store, nous diagnostiquons la panne et vous disons honnêtement si la réparation vaut le coup. Sinon, nous vous aidons à choisir le bon remplacement selon votre budget. Réparez pour moins, économisez plus.",
+    "featured": "Produits",
+    "featuredSubtitle": "Découvrez nos produits"
   },
   "dashboard": {
     "title": "Tableau de bord",

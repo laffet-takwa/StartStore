@@ -177,3 +177,29 @@ class InventoryAdjustmentSerializer(serializers.Serializer):
 
         attrs['product'] = product
         return attrs
+
+
+class PublicCategorySerializer(serializers.ModelSerializer):
+    """Public category serializer for the storefront (counts only, no internal flags)."""
+    product_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug', 'description', 'image', 'product_count']
+
+
+class PublicProductSerializer(serializers.ModelSerializer):
+    """Public product serializer for the storefront.
+
+    Deliberately hides commercial/internal data: no purchase_price, barcode or supplier.
+    """
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    is_low_stock = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'sku', 'brand', 'description',
+            'selling_price', 'stock_quantity', 'is_low_stock',
+            'image', 'category', 'category_name',
+        ]

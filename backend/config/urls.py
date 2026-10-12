@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/devices/', include('apps.customers.device_urls')),
     path('api/repairs/', include('apps.repairs.urls')),
     path('api/public/repairs/', include('apps.repairs.public_urls')),
+    path('api/public/', include('apps.inventory.public_urls')),
     path('api/products/', include('apps.inventory.product_urls')),
     path('api/categories/', include('apps.inventory.category_urls')),
     path('api/suppliers/', include('apps.inventory.supplier_urls')),

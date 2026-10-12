@@ -13,7 +13,7 @@ from datetime import timedelta, date
 from apps.customers.models import Customer
 from apps.repairs.models import RepairTicket, RepairStatus
 from apps.inventory.models import Product, InventoryMovement
-from apps.sales.models import Sale, Payment
+from apps.sales.models import Sale, Payment, SaleItem
 from apps.invoices.models import Invoice
 from apps.accounts.permissions import IsManagerOrAdmin, IsSalesOrAbove
 
@@ -62,6 +62,40 @@ class DashboardViewSet(viewsets.GenericViewSet):
         ).count()
         out_of_stock_products = Product.objects.filter(is_active=True, stock_quantity=0).count()
 
+        # Revenue per day for the last 7 days (dashboard chart)
+        week_start = today - timedelta(days=6)
+        daily_revenue = (
+            Sale.objects.filter(
+                status=Sale.Status.CONFIRMED,
+                confirmed_at__date__gte=week_start
+            )
+            .extra(select={'day': "DATE(confirmed_at)"})
+            .values('day')
+            .annotate(total=Sum('total'))
+        )
+        revenue_by_day = {row['day']: float(row['total'] or 0) for row in daily_revenue}
+        revenue_7days = [
+            {
+                'date': (week_start + timedelta(days=i)).isoformat(),
+                'total': revenue_by_day.get(week_start + timedelta(days=i), 0.0),
+            }
+            for i in range(7)
+        ]
+
+        # Repair status breakdown (all workflow statuses with counts)
+        status_counts_map = {
+            row['status']: row['count']
+            for row in RepairTicket.objects.values('status').annotate(count=Count('id'))
+        }
+        repairs_by_status = [
+            {
+                'status': value,
+                'label': str(RepairStatus(value).label),
+                'count': status_counts_map.get(value, 0),
+            }
+            for value, _ in RepairStatus.choices
+        ]
+
         # Recent items
         recent_repairs = RepairTicket.objects.select_related('customer', 'device', 'technician').order_by('-created_at')[:5]
         recent_sales = Sale.objects.filter(status=Sale.Status.CONFIRMED).select_related('customer', 'employee').order_by('-confirmed_at')[:5]
@@ -81,6 +115,7 @@ class DashboardViewSet(viewsets.GenericViewSet):
                 'month': float(month_revenue),
                 'year': float(year_revenue),
             },
+            'revenue_7days': revenue_7days,
             'customers': {
                 'total': total_customers,
                 'new_this_month': new_customers_month,
@@ -92,6 +127,7 @@ class DashboardViewSet(viewsets.GenericViewSet):
                 'in_progress': in_progress_repairs,
                 'ready': ready_repairs,
             },
+            'repairs_by_status': repairs_by_status,
             'inventory': {
                 'total_products': total_products,
                 'low_stock': low_stock_products,

@@ -45,6 +45,21 @@ export const suppliersApi = {
   delete: (id: string) => api.delete(`/suppliers/${id}/`).then((r) => r.data),
 }
 
+// Public (unauthenticated) storefront catalog — safe read-only data only.
+export const publicProductsApi = {
+  list: (params?: Record<string, unknown>) =>
+    api.get<PaginatedResponse<Product>>('/public/products/', { params }).then((r) => r.data),
+
+  get: (id: string) => api.get<Product>(`/public/products/${id}/`).then((r) => r.data),
+}
+
+export const publicCategoriesApi = {
+  list: (params?: Record<string, unknown>) =>
+    api.get<PaginatedResponse<Category>>('/public/categories/', { params }).then((r) => r.data),
+
+  get: (id: string) => api.get<Category>(`/public/categories/${id}/`).then((r) => r.data),
+}
+
 export const inventoryApi = {
   movements: (params?: Record<string, unknown>) =>
     api.get<PaginatedResponse<InventoryMovement>>('/inventory/movements/', { params }).then((r) => r.data),

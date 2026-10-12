@@ -143,7 +143,15 @@
     "trustWarranty": "Warranty guaranteed",
     "trustDelivery": "Fast delivery",
     "trustSupport": "Expert support",
-    "trustQuality": "Premium quality"
+    "trustQuality": "Premium quality",
+    "heroTitle": "Quality IT gear. Repairs you can follow.",
+    "heroSubtitle": "Buy laptops and components, or drop off a device and follow every repair step online.",
+    "shopNow": "Shop now",
+    "trackRepair": "Track a repair",
+    "promoTitle": "Talk to us before you buy new.",
+    "promoText": "Your computer or phone may not be dead: sometimes it only needs a small repair. Bring your device to Star Store and we will diagnose the fault and tell you honestly whether repairing it is worth it. If not, we help you choose the right replacement for your budget. You can follow every repair step online. Repair for less, save more.",
+    "featured": "Products",
+    "featuredSubtitle": "Discover our products"
   },
   "dashboard": {
     "title": "Dashboard",

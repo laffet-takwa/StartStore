@@ -313,6 +313,7 @@ export interface DashboardOverview {
     month: number
     year: number
   }
+  revenue_7days: { date: string; total: number }[]
   customers: {
     total: number
     new_this_month: number
@@ -324,6 +325,7 @@ export interface DashboardOverview {
     in_progress: number
     ready: number
   }
+  repairs_by_status: { status: string; label: string; count: number }[]
   inventory: {
     total_products: number
     low_stock: number

@@ -23,7 +23,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const apiError: ApiError = error.response?.data || { detail: error.message }
-    if (error.response?.status === 401) {
+    const url: string = error.config?.url || ''
+    const isPublic = url.includes('/public/')
+    if (error.response?.status === 401 && !isPublic) {
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
       window.location.href = '/login'

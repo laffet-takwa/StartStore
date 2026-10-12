@@ -1,19 +1,23 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { publicRepairsApi } from '@/api'
-import { Search, Wrench, AlertCircle, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
+import { Search, Wrench } from 'lucide-react'
 import { toast } from 'sonner'
-import { Card, CardBody, Button } from '@/components/ui'
+import { LOGO_IMAGE } from '@/utils/images'
 import { useI18n } from '@/i18n/context'
 
-const deviceIcon: Record<string, React.ReactNode> = {
-  laptop: <Laptop className="h-10 w-10 text-slate-400" />,
-  desktop: <Monitor className="h-10 w-10 text-slate-400" />,
-  phone: <Smartphone className="h-10 w-10 text-slate-400" />,
-  tablet: <Tablet className="h-10 w-10 text-slate-400" />,
-  other: <Monitor className="h-10 w-10 text-slate-400" />,
+const STATUS_STEP: Record<string, number> = {
+  received: 0,
+  diagnosis: 1,
+  waiting_customer: 1,
+  approved: 2,
+  repairing: 3,
+  testing: 4,
+  ready: 5,
+  delivered: 6,
 }
+
+const STEP_LABELS = ['received', 'diagnosis', 'approved', 'repairing', 'testing', 'ready', 'delivered']
 
 export default function TrackPage() {
   const { t } = useI18n()
@@ -34,114 +38,67 @@ export default function TrackPage() {
     setSearched(true)
   }
 
+  const repair = (tracking as any)?.repair
+  const device = (tracking as any)?.device
+  const step = repair ? (STATUS_STEP[repair.status] ?? -1) : -1
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto pt-12 pb-16 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-8"
-        >
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-primary/10 mb-4">
-            <Wrench className="h-6 w-6 text-primary" />
+    <div style={{ minHeight: '100%' }}>
+      <div className="au cd st" style={{ maxWidth: 520, boxShadow: 'var(--sh)' }}>
+        <img className="trl" src={LOGO_IMAGE} alt="STAR STORE" />
+        <h2 className="hf" style={{ textAlign: 'center', fontSize: 22 }}>
+          {t('tracking.title')}
+        </h2>
+        <p className="mu" style={{ marginBottom: 8 }}>{t('tracking.subtitle')}</p>
+
+        <form onSubmit={handleSearch} className="row">
+          <label className="sr" style={{ flex: 1 }}>
+            <span className="si"><Search size={16} /></span>
+            <input
+              className="in"
+              style={{ width: '100%' }}
+              value={matricule}
+              onChange={(e) => setMatricule(e.target.value)}
+              placeholder={t('tracking.ticketNumber')}
+            />
+          </label>
+          <button className="btn" type="submit" disabled={isLoading}>
+            {isLoading ? t('common.loading') : t('tracking.track')}
+          </button>
+        </form>
+
+        {error && <p className="msg er" style={{ marginTop: 14 }}>{t('tracking.noTicket')}</p>}
+
+        {tracking && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row" style={{ justifyContent: 'space-between', margin: '6px 0 10px' }}>
+              <b className="hf" style={{ fontSize: 16 }}>
+                <Wrench size={16} style={{ verticalAlign: '-2px', color: 'var(--ac)' }} /> {(tracking as any).matricule}
+              </b>
+              <span className="bd ok">{repair?.status_label}</span>
+            </div>
+
+            {step >= 0 && (
+              <div className="tl">
+                {STEP_LABELS.map((k, i) => (
+                  <div key={k} className={i < step ? 'd' : i === step ? 'c' : ''}>
+                    {t(`repairs.${k}`)}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="ln"><span>{t('tracking.device')}</span><b>{device?.brand} {device?.model}</b></div>
+            <div className="ln"><span>{t('tracking.receivedAt')}</span><b>{new Date(repair?.received_at).toLocaleDateString()}</b></div>
+            <div className="ln"><span>{t('tracking.lastUpdated')}</span><b>{new Date(repair?.last_updated).toLocaleString()}</b></div>
+            {repair?.estimated_completion_date && (
+              <div className="ln">
+                <span>{t('tracking.estimatedCompletion')}</span>
+                <b>{new Date(repair.estimated_completion_date).toLocaleDateString()}</b>
+              </div>
+            )}
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{t('tracking.title')}</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">{t('tracking.subtitle')}</p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <Card>
-            <CardBody>
-              <form onSubmit={handleSearch} className="flex gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
-                  <input
-                    type="text"
-                    value={matricule}
-                    onChange={(e) => setMatricule(e.target.value)}
-                    placeholder={t('tracking.ticketNumber') + '...'}
-                    className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white dark:bg-dark-surface dark:border-slate-700 dark:text-slate-100"
-                  />
-                </div>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? t('common.loading') : t('tracking.track')}
-                </Button>
-              </form>
-            </CardBody>
-          </Card>
-        </motion.div>
-
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Card className="mt-6">
-                <CardBody>
-                  <div className="flex items-center gap-3 text-danger">
-                    <AlertCircle className="h-5 w-5" />
-                    <p className="text-sm">{t('tracking.noTicket')}</p>
-                  </div>
-                </CardBody>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {tracking && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Card className="mt-6">
-                <CardBody>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('tracking.statusLabel')}</h2>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">{(tracking as any).matricule}</span>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-20 w-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
-                        {deviceIcon[(tracking as any).device.type] || deviceIcon.other}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{(tracking as any).repair.status_label}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{t('tracking.lastUpdated')}: {new Date((tracking as any).repair.last_updated).toLocaleString()}</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-md">
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{t('tracking.device')}</p>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{(tracking as any).device.brand} {(tracking as any).device.model}</p>
-                      </div>
-                      <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-md">
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{t('tracking.receivedAt')}</p>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{new Date((tracking as any).repair.received_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    {(tracking as any).repair.estimated_completion_date && (
-                      <div className="p-3 bg-info/5 rounded-md">
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{t('tracking.estimatedCompletion')}</p>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{new Date((tracking as any).repair.estimated_completion_date).toLocaleDateString()}</p>
-                      </div>
-                    )}
-                  </div>
-                </CardBody>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        )}
       </div>
     </div>
   )
