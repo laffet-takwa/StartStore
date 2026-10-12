@@ -1,4 +1,4 @@
-import { supabase, toPaginated, type SupabasePaginated } from '@/lib/supabase'
+import { supabase, toPaginated } from '@/lib/supabase'
 import type { Product, Category, Supplier, PaginatedResponse, InventoryMovement } from '@/types'
 
 // Helper to map Supabase product to API format
@@ -11,7 +11,7 @@ function mapProduct(p: Record<string, unknown>): Product {
     supplier_name: (p.supplier as Record<string, unknown>)?.name as string | undefined,
     is_low_stock: Number(p.stock_quantity) <= Number(p.minimum_stock),
     stock_value: Number(p.stock_quantity) * Number(p.purchase_price),
-  } as Product
+  } as unknown as Product
 }
 
 export const productsApi = {

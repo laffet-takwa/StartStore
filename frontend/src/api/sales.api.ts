@@ -31,8 +31,8 @@ function mapSale(s: Record<string, unknown>): Sale {
     employee_name: s.employee
       ? `${(s.employee as Record<string, unknown>).first_name || ''} ${(s.employee as Record<string, unknown>).last_name || ''}`.trim()
       : '',
-    items: items as Sale['items'],
-    payments: payments as Sale['payments'],
+    items: items as unknown as Sale['items'],
+    payments: payments as unknown as Sale['payments'],
     paid_amount: paidAmount,
     remaining_amount: Number(s.total || 0) - paidAmount,
     items_count: items.length,

@@ -106,7 +106,7 @@ export const authApi = {
     return result as Employee
   },
 
-  changePassword: async (oldPassword: string, newPassword: string) => {
+  changePassword: async (_oldPassword: string, newPassword: string) => {
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     if (error) throw error
     return { success: true }
