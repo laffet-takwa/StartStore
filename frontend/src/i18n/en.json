@@ -153,6 +153,22 @@
     "featured": "Products",
     "featuredSubtitle": "Discover our products"
   },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Browse our product categories",
+    "newCategory": "New Category",
+    "searchPlaceholder": "Search categories...",
+    "noCategories": "No categories found",
+    "totalCategories": "Total categories",
+    "activeCategories": "Active categories",
+    "name": "Name",
+    "slug": "Slug",
+    "description": "Description",
+    "image": "Image",
+    "productCount": "Product count",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome",

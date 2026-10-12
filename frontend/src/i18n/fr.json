@@ -153,6 +153,22 @@
     "featured": "Produits",
     "featuredSubtitle": "Découvrez nos produits"
   },
+  "categories": {
+    "title": "Catégories",
+    "subtitle": "Parcourir nos catégories de produits",
+    "newCategory": "Nouvelle catégorie",
+    "searchPlaceholder": "Rechercher des catégories...",
+    "noCategories": "Aucune catégorie trouvée",
+    "totalCategories": "Total des catégories",
+    "activeCategories": "Catégories actives",
+    "name": "Nom",
+    "slug": "Slug",
+    "description": "Description",
+    "image": "Image",
+    "productCount": "Nombre de produits",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
   "dashboard": {
     "title": "Tableau de bord",
     "welcome": "Bonjour",

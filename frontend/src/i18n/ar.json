@@ -153,6 +153,22 @@
     "featured": "المنتجات",
     "featuredSubtitle": " اكتشف منتجاتنا"
   },
+  "categories": {
+    "title": "التصنيفات",
+    "subtitle": "تصفح تصنيفات المنتجات",
+    "newCategory": "تصنيف جديد",
+    "searchPlaceholder": "البحث عن تصنيفات...",
+    "noCategories": "لم يتم العثور على تصنيفات",
+    "totalCategories": "إجمالي التصنيفات",
+    "activeCategories": "التصنيفات النشطة",
+    "name": "الاسم",
+    "slug": "الرابط",
+    "description": "الوصف",
+    "image": "الصورة",
+    "productCount": "عدد المنتجات",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
   "dashboard": {
     "title": "لوحة التحكم",
     "welcome": "مرحباً",
