@@ -1,4 +1,4 @@
-export { api } from './axios'
+export { supabase } from '@/lib/supabase'
 export * from './auth.api'
 export * from './dashboard.api'
 export * from './customers.api'

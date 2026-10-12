@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
-import api from '@/api/axios'
+import { supabase } from '@/lib/supabase'
 import type { Employee } from '@/types'
 
 interface AuthContextType {
@@ -25,27 +25,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      api
-        .get('/auth/me/')
-        .then((res) => setUser(res.data))
-        .catch(() => {
-          localStorage.removeItem('access_token')
-          localStorage.removeItem('refresh_token')
-        })
-        .finally(() => setLoading(false))
-    } else {
+    let mounted = true
+
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user && mounted) {
+          const { data: employee, error } = await supabase
+            .from('employees')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+          if (!error && employee && mounted) {
+            setUser(employee as Employee)
+          }
+        }
+      } catch {
+        // ignore
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    initAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const { data: employee, error } = await supabase
+          .from('employees')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+        if (!error && employee) {
+          setUser(employee as Employee)
+        } else {
+          setUser(null)
+        }
+      } else {
+        setUser(null)
+      }
       setLoading(false)
+    })
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
     }
   }, [])
 
   const login = async (email: string, password: string) => {
-    const res = await api.post('/auth/login/', { email, password })
-    const { access, refresh, user } = res.data
-    localStorage.setItem('access_token', access)
-    localStorage.setItem('refresh_token', refresh)
-    setUser(user)
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) throw error
+
+    const { data: employee, error: empError } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('id', data.user.id)
+      .single()
+    if (empError) throw empError
+    setUser(employee as Employee)
   }
 
   const signup = async (data: {
@@ -56,29 +94,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     phone?: string
     role?: string
   }) => {
-    const res = await api.post('/auth/signup/', data)
-    const { access, refresh, user } = res.data
-    localStorage.setItem('access_token', access)
-    localStorage.setItem('refresh_token', refresh)
-    setUser(user)
-  }
+    const { data: authData, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone: data.phone,
+          role: data.role || 'sales',
+        },
+      },
+    })
+    if (error) throw error
 
-  const logout = async () => {
-    const refresh = localStorage.getItem('refresh_token')
-    try {
-      if (refresh) {
-        await api.post('/auth/logout/', { refresh })
-      }
-    } finally {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      setUser(null)
+    if (authData.user) {
+      const { error: empError } = await supabase
+        .from('employees')
+        .insert({
+          id: authData.user.id,
+          email: data.email,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone: data.phone || '',
+          role: data.role || 'sales',
+          is_active: true,
+          is_staff: true,
+        })
+      if (empError) throw empError
+
+      const { data: employee, error: fetchError } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('id', authData.user.id)
+        .single()
+      if (fetchError) throw fetchError
+      setUser(employee as Employee)
     }
   }
 
+  const logout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+  }
+
   const updateProfile = async (data: Partial<Employee>) => {
-    const res = await api.patch('/auth/me/update/', data)
-    setUser(res.data)
+    if (!user) return
+    const { error } = await supabase
+      .from('employees')
+      .update(data)
+      .eq('id', user.id)
+    if (error) throw error
+    setUser({ ...user, ...data })
   }
 
   return (
