@@ -1,21 +1,19 @@
-services:
-  # PostgreSQL Database
-  - type: pserv
-    name: smartstore-db
-    env: postgres
+databases:
+  - name: smartstore-db
+    databaseName: smartstore
+    user: smartstore
     plan: free
     region: frankfurt
 
-  # Django Backend
+services:
   - type: web
     name: smartstore-backend
-    env: python
+    runtime: python
     region: frankfurt
     buildCommand: |
       cd backend
       pip install -r requirements/production.txt
       python manage.py collectstatic --noinput
-      python manage.py migrate --noinput
     preDeployCommand: |
       cd backend
       python manage.py migrate --noinput
@@ -34,7 +32,7 @@ services:
           name: smartstore-db
           property: connectionString
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://smartstore-frontend.onrender.com,http://localhost:5173"
+        value: "http://localhost:5173"
       - key: STATIC_URL
         value: "/static/"
       - key: STATIC_ROOT
